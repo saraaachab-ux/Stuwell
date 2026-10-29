@@ -1,0 +1,1971 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>StuWell</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="StuWell: student well-being check-ins, screeners, medical requests and a director dashboard.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&display=swap">
+<style>
+/* Layout: one calm column on phones, two-column hero and card grids from tablet up. Warm cream ground, sage cards, terracotta for the always-visible Help now. */
+:root{
+  --bg:#F8F5EE; --surface:#FFFDF9; --surface-2:#F0ECE1; --ink:#15233B; --ink-soft:#4F5B6E; --line:#E4DED0;
+  --sage:#E0EBDD; --sage-ink:#1F4A37; --primary:#3D6650; --on-primary:#FFFFFF;
+  --clay:#F6D6C9; --clay-ink:#6A2B17;
+  --blue:#1B6FC2; --brand-green:#128A5C; --blue-soft:#E3EEF9;
+  --ok-soft:#DCEBDD; --ok-ink:#1F5B3A; --warn-soft:#F7E8C4; --warn-ink:#6B4A06; --attn-soft:#F8DEC9; --attn-ink:#7A3A0B; --crit-soft:#F8DAD5; --crit-ink:#8A2318;
+  --ill-a:#FBE4D5; --ill-b:#E3EDDD; --ill-sun:#F2B544; --ill-c1:#FFFDF9; --ill-c2:#C9DDC9; --ill-skin:#E8B793; --ill-hair:#4A3326; --ill-top:#3D6650; --ill-pants:#2B3E5C; --ill-bag:#D9805F; --ill-ground:#CFE0CF;
+  --shadow:0 1px 2px rgba(21,35,59,.05),0 10px 28px rgba(21,35,59,.07);
+  --f-display:'Fraunces','Iowan Old Style','Georgia',serif;
+  --f-body:'DM Sans','Segoe UI',system-ui,-apple-system,sans-serif;
+  --f-brand:'Baloo 2','Nunito','Segoe UI',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10181A; --surface:#172224; --surface-2:#1D2B2D; --ink:#EAF1EE; --ink-soft:#A9B7B1; --line:#2A3A3B;
+  --sage:#1E3329; --sage-ink:#C3E3D0; --primary:#6FB38C; --on-primary:#0E1F16;
+  --clay:#4A2A20; --clay-ink:#F6CDBD;
+  --blue:#6DB0F2; --brand-green:#52C990; --blue-soft:#18304A;
+  --ok-soft:#1E3329; --ok-ink:#BFE3CC; --warn-soft:#3F3414; --warn-ink:#F0D58A; --attn-soft:#4A2D17; --attn-ink:#F4C79F; --crit-soft:#4A211D; --crit-ink:#F5B7AE;
+  --ill-a:#3A2B27; --ill-b:#1E3329; --ill-c1:#2E3F3E; --ill-c2:#35544A; --ill-skin:#D9A57F; --ill-hair:#6B4A38; --ill-top:#6FB38C; --ill-pants:#7FA7D6; --ill-bag:#E39A7A; --ill-ground:#274236;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.28);
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10181A; --surface:#172224; --surface-2:#1D2B2D; --ink:#EAF1EE; --ink-soft:#A9B7B1; --line:#2A3A3B;
+  --sage:#1E3329; --sage-ink:#C3E3D0; --primary:#6FB38C; --on-primary:#0E1F16;
+  --clay:#4A2A20; --clay-ink:#F6CDBD;
+  --blue:#6DB0F2; --brand-green:#52C990; --blue-soft:#18304A;
+  --ok-soft:#1E3329; --ok-ink:#BFE3CC; --warn-soft:#3F3414; --warn-ink:#F0D58A; --attn-soft:#4A2D17; --attn-ink:#F4C79F; --crit-soft:#4A211D; --crit-ink:#F5B7AE;
+  --ill-a:#3A2B27; --ill-b:#1E3329; --ill-c1:#2E3F3E; --ill-c2:#35544A; --ill-skin:#D9A57F; --ill-hair:#6B4A38; --ill-top:#6FB38C; --ill-pants:#7FA7D6; --ill-bag:#E39A7A; --ill-ground:#274236;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 28px rgba(0,0,0,.28);
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:150px}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.6;padding-block:0 56px;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:40;background:var(--bg)}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;line-height:1.15;margin:0;text-wrap:balance;letter-spacing:-.01em}
+h1{font-size:clamp(2.3rem,7.2vw,3.7rem);font-weight:600;letter-spacing:-.02em}
+h2{font-size:clamp(1.7rem,4.6vw,2.3rem)}
+h3{font-size:1.3rem}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:8px}
+.wrap{max-width:1040px;margin-inline:auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.soft{color:var(--ink-soft)}
+.small{font-size:.9rem}
+.label{font-size:.76rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--ink-soft)}
+.mono{font-variant-numeric:tabular-nums}
+.stack{display:flex;flex-direction:column;gap:20px}
+.sec{padding-block:44px 0;display:flex;flex-direction:column;gap:22px}
+.sec-sub{max-width:58ch;color:var(--ink-soft)}
+.ico{flex:none}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px 6px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0;text-decoration:none;color:inherit}
+.wm{font-family:var(--f-brand);font-weight:800;font-size:1.75rem;line-height:1;letter-spacing:-.01em;display:inline-flex}
+.wm .a{color:var(--blue)} .wm .b{color:var(--brand-green)}
+.help-pill{display:inline-flex;align-items:center;gap:8px;background:var(--clay);color:var(--clay-ink);border:0;border-radius:999px;padding:11px 18px;min-height:46px;font-weight:600;cursor:pointer;white-space:nowrap;transition:transform .12s,filter .15s}
+.help-pill:hover{filter:brightness(.96)} .help-pill:active{transform:translateY(1px)}
+.tabs{display:flex;gap:6px;padding-block:4px 10px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;color:var(--ink-soft);border-radius:999px;padding:11px 22px;font-weight:500;cursor:pointer;white-space:nowrap;min-height:46px;transition:background .15s,color .15s}
+.tab:hover{color:var(--ink)}
+.tab[aria-current="page"]{background:var(--surface-2);color:var(--ink);font-weight:600}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:12px 22px;min-height:50px;font-weight:600;cursor:pointer;text-decoration:none;transition:transform .12s,background .15s,border-color .15s,filter .15s}
+.btn:hover{border-color:var(--primary)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary);padding-inline:28px}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.clay{background:var(--clay);color:var(--clay-ink);border-color:transparent}
+.btn.ghost{border-color:transparent;background:transparent;padding-inline:14px}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.sm{min-height:42px;padding:8px 18px;font-size:.95rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+
+/* hero */
+.hero{display:grid;grid-template-columns:minmax(0,1fr);gap:30px;padding-block:34px 4px;align-items:center}
+.badge{display:inline-flex;align-items:center;gap:10px;background:var(--sage);color:var(--sage-ink);border-radius:999px;padding:9px 18px;font-weight:600;font-size:.95rem;width:fit-content}
+.hero h1 em{font-style:italic;color:var(--primary);font-weight:500}
+.hero p.lead{font-size:1.2rem;line-height:1.65;color:var(--ink-soft);max-width:46ch}
+.privacy{display:flex;align-items:center;gap:10px;color:var(--ink-soft);font-size:.95rem}
+.illo{border-radius:30px;overflow:hidden;box-shadow:var(--shadow);aspect-ratio:4/3;max-width:100%;background:var(--ill-b)}
+.illo svg{display:block;width:100%;height:100%}
+@media (min-width:860px){.hero{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:56px;padding-block:56px 8px}}
+
+/* sage cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:16px}
+.sage-card{background:var(--sage);color:var(--sage-ink);border-radius:26px;padding:28px 26px 30px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.sage-card h3{color:var(--ink)}
+.sage-card p{color:var(--ink-soft);line-height:1.65}
+.sage-card .ic{width:50px;height:50px;border-radius:15px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;color:var(--primary)}
+.checkup{text-align:left;border:0;cursor:pointer;font:inherit;transition:transform .15s,box-shadow .15s}
+.checkup:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.checkup .meta{display:flex;gap:10px;flex-wrap:wrap;font-size:.85rem;font-weight:600;color:var(--sage-ink)}
+.checkup .go{display:inline-flex;align-items:center;gap:8px;font-weight:600;color:var(--primary);margin-top:4px}
+
+/* flow cards (check-in and screeners) */
+.flow{max-width:720px;margin-inline:auto;padding-block:32px 0;display:flex;flex-direction:column;gap:22px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:30px 26px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:22px}
+.progress{height:8px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--primary);border-radius:99px;transition:width .3s}
+.scale{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.scale button,.opt{border:1px solid var(--line);background:var(--bg);border-radius:18px;cursor:pointer;font-weight:600;transition:background .15s,border-color .15s,transform .1s}
+.scale button{min-height:68px;font-size:1.4rem;font-family:var(--f-display)}
+.scale button:hover,.opt:hover{border-color:var(--primary);background:var(--sage)}
+.scale button[aria-pressed="true"],.opt[aria-pressed="true"]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.anch{display:flex;justify-content:space-between;gap:12px;font-size:.88rem;color:var(--ink-soft)}
+.optlist{display:grid;gap:10px}
+.opt{text-align:left;padding:15px 20px;min-height:56px;font-size:1rem;font-weight:500}
+.checks{display:flex;flex-direction:column;gap:10px}
+.checks label{display:flex;gap:14px;align-items:flex-start;padding:15px 18px;border:1px solid var(--line);border-radius:18px;background:var(--bg);cursor:pointer;line-height:1.45;transition:background .15s,border-color .15s}
+.checks label:hover{border-color:var(--primary);background:var(--sage)}
+.checks input{margin-top:3px;width:20px;height:20px;accent-color:var(--primary);flex:none}
+.nav{display:flex;justify-content:space-between;gap:12px;align-items:center}
+
+/* result */
+.forecast{display:grid;gap:18px;align-items:center;background:var(--sage);color:var(--sage-ink);border-radius:28px;padding:28px 26px}
+.forecast .wi{width:84px;height:84px;border-radius:24px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;color:var(--primary)}
+.forecast h2{color:var(--ink)}
+.forecast .idx{font-weight:700;font-size:.95rem}
+.tone-attn{background:var(--attn-soft);color:var(--attn-ink)} .tone-warn{background:var(--warn-soft);color:var(--warn-ink)}
+.tone-crit{background:var(--crit-soft);color:var(--crit-ink)} .tone-ok{background:var(--ok-soft);color:var(--ok-ink)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:var(--surface-2);border-radius:999px;padding:6px 14px;font-size:.9rem;font-weight:500}
+.crisis{background:var(--crit-soft);color:var(--crit-ink);border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.crisis h3{color:inherit}
+.note{background:var(--warn-soft);color:var(--warn-ink);border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:10px}
+.note h3{color:inherit;font-size:1.15rem}
+.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:10px}
+.tipgroup{border-left:3px solid var(--primary);padding:2px 0 2px 16px;display:flex;flex-direction:column;gap:4px}
+.tipgroup ul{margin:4px 0 0;padding-left:18px}
+.fine{font-size:.88rem;color:var(--ink-soft);line-height:1.55}
+
+/* diary */
+.diary{display:flex;flex-direction:column;gap:10px}
+.dr{display:grid;grid-template-columns:78px minmax(0,1fr) 112px;gap:12px;align-items:center;font-size:.92rem}
+.bar{height:12px;border-radius:99px;background:var(--surface-2);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--primary)}
+.empty{border:1.5px dashed var(--line);border-radius:24px;padding:28px 22px;text-align:center;color:var(--ink-soft);display:flex;flex-direction:column;gap:6px;align-items:center}
+
+/* tools */
+.toolpick{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:12px}
+.tp{border:2px solid transparent;background:var(--sage);color:var(--sage-ink);border-radius:22px;padding:18px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:8px;min-width:0;transition:border-color .15s,transform .15s}
+.tp:hover{transform:translateY(-2px)}
+.tp[aria-pressed="true"]{border-color:var(--primary);background:var(--surface)}
+.tp b{font-family:var(--f-display);font-weight:600;font-size:1.1rem;color:var(--ink)}
+.tp span.d{font-size:.88rem;color:var(--ink-soft);line-height:1.4}
+.tool{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:30px 24px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:22px;align-items:center;text-align:center}
+.tool>*{max-width:560px}
+.seg{display:inline-flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:999px;flex-wrap:wrap;justify-content:center}
+.seg button{border:0;background:transparent;border-radius:999px;padding:9px 16px;font-weight:600;cursor:pointer;color:var(--ink-soft);min-height:42px}
+.seg button[aria-pressed="true"]{background:var(--primary);color:var(--on-primary)}
+.orb-wrap{width:min(78vw,300px);aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative}
+.orb-ring{position:absolute;inset:0;border-radius:50%;border:2px dashed var(--line)}
+.orb{width:56%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--sage),var(--primary));transform:scale(.6);transition:transform 4s ease-in-out;display:flex;align-items:center;justify-content:center;color:var(--on-primary);font-weight:700;font-size:1.15rem;text-align:center}
+.timer{font-family:var(--f-display);font-size:clamp(3.4rem,16vw,5.4rem);font-weight:600;font-variant-numeric:tabular-nums;line-height:1}
+.gstep{font-family:var(--f-display);font-size:clamp(1.5rem,5vw,2rem);line-height:1.25}
+.gnum{font-family:var(--f-display);font-size:4.4rem;color:var(--primary);line-height:1}
+textarea.field,select.field,input.field{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:18px;padding:14px 16px;min-height:52px;font-size:1rem}
+textarea.field{min-height:140px;resize:vertical;line-height:1.55}
+textarea.field:focus,select.field:focus{outline:0;border-color:var(--primary);box-shadow:0 0 0 4px color-mix(in srgb,var(--primary) 22%,transparent)}
+.wd{transition:opacity .6s,transform .6s}
+.wd.gone{opacity:0;transform:translateY(-14px) scale(.98)}
+.ckl{display:flex;flex-direction:column;gap:10px;width:100%;text-align:left}
+
+/* topics, builder, faq */
+.topics{display:flex;flex-direction:column;gap:12px}
+.topic{background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.topic-h,.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;text-align:left;background:none;border:0;padding:20px 24px;cursor:pointer;min-height:64px}
+.topic-h:hover,.faq-q:hover{background:var(--surface-2)}
+.topic-h b,.faq-q span:first-child{font-family:var(--f-display);font-weight:600;font-size:1.15rem;line-height:1.3}
+.chev{flex:none;transition:transform .2s;color:var(--ink-soft)}
+.topic-b{padding:4px 24px 26px;display:flex;flex-direction:column;gap:14px}
+.topic-b ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.seek{background:var(--warn-soft);color:var(--warn-ink);border-radius:16px;padding:14px 18px}
+.builder{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+.fields{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))}
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld label{font-weight:600;font-size:.92rem}
+.msgbox{background:var(--sage);color:var(--ink);border-radius:22px;padding:22px 24px;font-size:1.05rem;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere}
+.faq{background:var(--surface);border:1px solid var(--line);border-radius:26px;overflow:hidden}
+.faq-i{border-bottom:1px solid var(--line)} .faq-i:last-child{border-bottom:0}
+.faq-a{padding:0 24px 24px;color:var(--ink-soft);line-height:1.7;max-width:66ch}
+.reach{display:flex;gap:16px;align-items:center;background:var(--clay);color:var(--clay-ink);border-radius:26px;padding:24px 26px;flex-wrap:wrap;justify-content:space-between}
+.reach p{max-width:46ch}
+.reach h3{color:inherit}
+
+/* medical request */
+.mr{display:grid;gap:24px;align-items:start}
+@media (min-width:900px){.mr{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}}
+.req{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.req p{overflow-wrap:anywhere}
+.pill{display:inline-block;border-radius:999px;padding:4px 12px;font-size:.82rem;font-weight:700;white-space:nowrap}
+select.field.inl{width:auto;min-height:42px;padding:8px 14px}
+input.field{min-width:0}
+
+/* dialog */
+.backdrop{position:fixed;inset:0;z-index:60;background:rgba(10,20,22,.6);display:flex;align-items:flex-end;justify-content:center;padding-top:max(16px,env(safe-area-inset-top,0px));padding-bottom:0;padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+.dialog{background:var(--surface);width:100%;max-width:560px;max-height:92vh;overflow:auto;border-radius:28px 28px 0 0;padding:26px max(22px,env(safe-area-inset-left,0px)) max(26px,env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:18px;box-shadow:var(--shadow)}
+.numrow{display:flex;justify-content:space-between;align-items:center;gap:14px;border:1px solid var(--line);border-radius:18px;padding:12px 16px;background:var(--bg)}
+.numrow .n{font-family:var(--f-display);font-size:1.7rem;font-weight:600;color:var(--clay-ink);background:var(--clay);border-radius:12px;padding:2px 14px;text-decoration:none;font-variant-numeric:tabular-nums}
+.numrow div{min-width:0}
+@media (min-width:640px){.backdrop{align-items:center;padding:16px}.dialog{border-radius:28px}}
+
+footer.foot{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px;color:var(--ink-soft);font-size:.88rem;line-height:1.6}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;font-weight:600;font-size:.95rem;z-index:70;max-width:90vw;box-shadow:var(--shadow)}
+
+@media (min-width:700px){.forecast{grid-template-columns:auto 1fr;gap:26px}.panel{padding:36px 40px}}
+@media (max-width:480px){.dr{grid-template-columns:62px minmax(0,1fr) 96px;gap:8px}.wm{font-size:1.5rem}.help-pill{padding:10px 14px}.scale{gap:6px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
+/* ===== app shell, landing, menu, director ===== */
+:root{--lv-urgent:#B3261E;--lv-attn:#D9731B;--lv-watch:#D9A21B;--lv-ok:#3D8B5E;--lv-none:#B9B4A6;--shadow-lg:0 4px 10px rgba(21,35,59,.06),0 28px 64px rgba(21,35,59,.14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--lv-urgent:#F28B82;--lv-attn:#F2A25C;--lv-watch:#E8C45A;--lv-ok:#6FB38C;--lv-none:#5B6B66;--shadow-lg:0 4px 10px rgba(0,0,0,.35),0 28px 64px rgba(0,0,0,.45)}}
+:root[data-theme="dark"]{--lv-urgent:#F28B82;--lv-attn:#F2A25C;--lv-watch:#E8C45A;--lv-ok:#6FB38C;--lv-none:#5B6B66;--shadow-lg:0 4px 10px rgba(0,0,0,.35),0 28px 64px rgba(0,0,0,.45)}
+html{scroll-padding-top:96px}
+.tone-none{background:var(--surface-2);color:var(--ink-soft)}
+.btn.light{background:var(--surface);color:var(--ink);border-color:transparent}
+.btn.line-light{background:transparent;color:inherit;border-color:currentColor}
+.top-right{display:flex;align-items:center;gap:10px}
+.mode-chip{border-radius:999px;padding:6px 14px;font-size:.82rem;font-weight:700;background:var(--sage);color:var(--sage-ink);white-space:nowrap}
+.mode-chip.dir{background:var(--ink);color:var(--bg)}
+.mode-chip.soft{background:var(--surface-2);color:var(--ink-soft)}
+.nav-links{display:none;gap:2px;align-items:center}
+.nl{color:var(--ink-soft);text-decoration:none;font-weight:500;padding:10px 14px;border-radius:999px;transition:background .15s,color .15s}
+.nl:hover{background:var(--surface-2);color:var(--ink)}
+@media (min-width:1000px){.nav-links{display:flex}}
+@media (max-width:620px){.mode-chip{display:none}}
+@media (max-width:400px){.brand svg{width:36px;height:36px}.help-pill{padding:10px 12px}.wm{font-size:1.4rem}}
+.menu-wrap{position:relative}
+.menu-btn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+.menu-btn:hover,.menu-btn[aria-expanded="true"]{background:var(--surface-2);border-color:var(--primary)}
+.menu{position:absolute;right:0;top:calc(100% + 10px);width:min(330px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow-lg);padding:8px;z-index:50;display:flex;flex-direction:column;gap:2px;max-height:min(78vh,640px);overflow:auto}
+.mi{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:none;border:0;border-radius:16px;padding:12px 14px;cursor:pointer;color:var(--ink);min-height:50px}
+.mi:hover{background:var(--surface-2)}
+.mi .ico{color:var(--primary)}
+.mi b{font-weight:600}
+.mdiv{border:0;border-top:1px solid var(--line);margin:6px 8px}
+.mtheme{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 14px;flex-wrap:wrap}
+.mconfirm{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+
+/* landing */
+.lsec{padding-block:84px 0}
+.lhero{position:relative;isolation:isolate;overflow-x:clip}
+.blobs{position:absolute;inset:0;z-index:-1;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(64px);opacity:.6;animation:floaty 18s ease-in-out infinite alternate}
+.b1{width:440px;height:440px;left:-80px;top:20px;background:var(--sage)}
+.b2{width:380px;height:380px;right:-60px;top:140px;background:var(--clay)}
+.b3{width:300px;height:300px;left:38%;top:400px;background:var(--blue-soft)}
+@keyframes floaty{to{transform:translate(34px,-26px) scale(1.1)}}
+.lhero-in{display:grid;grid-template-columns:minmax(0,1fr);gap:44px;padding-block:48px 36px;align-items:center}
+.lhero-in>*{min-width:0}
+.mock .illo{border-radius:34px;box-shadow:var(--shadow-lg)}
+.lhero h1{font-size:clamp(2.6rem,8.6vw,4.7rem);line-height:1.04}
+.lhero h1 em{font-style:italic;color:var(--primary);font-weight:500}
+.lhero .lead{font-size:1.2rem;line-height:1.65;color:var(--ink-soft);max-width:48ch}
+@media (min-width:960px){.lhero-in{grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:64px;padding-block:84px 48px}}
+.doors{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));max-width:760px}
+.door{text-align:left;border:0;cursor:pointer;border-radius:28px;padding:22px 22px 20px;display:flex;flex-direction:column;gap:10px;min-height:186px;transition:transform .18s,box-shadow .18s;text-decoration:none;color:inherit}
+.door:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.door.stu{background:var(--primary);color:var(--on-primary)}
+.door.prof{background:var(--blue);color:#fff}
+.door.dir{background:var(--ink);color:var(--bg)}
+.door .dic{width:46px;height:46px;border-radius:15px;background:rgba(255,255,255,.2);display:inline-flex;align-items:center;justify-content:center}
+.door.dir .dic{background:rgba(255,255,255,.14)}
+.door .dk{font-family:var(--f-display);font-size:1.55rem;font-weight:600;line-height:1.15}
+.door p{opacity:.9;font-size:.95rem;line-height:1.5}
+@media (min-width:700px){.doors{grid-template-columns:repeat(3,minmax(0,1fr));max-width:720px}.door{padding:18px 16px;min-height:0}.door .dk{font-size:1.2rem}.door p{font-size:.86rem}}
+.door .go{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.mock{position:relative;max-width:440px;margin-inline:auto;width:100%;padding-block:20px}
+.phone{background:var(--surface);border:1px solid var(--line);border-radius:38px;padding:26px 24px;box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:16px}
+.phone-q{font-family:var(--f-display);font-size:1.5rem;line-height:1.2}
+.range{width:100%;accent-color:var(--primary);height:34px}
+.demo-out{border-radius:24px;background:var(--sage);color:var(--sage-ink);padding:18px;display:flex;gap:16px;align-items:center;min-height:112px}
+.demo-out .wi{flex:none;width:64px;height:64px;border-radius:20px;background:var(--surface);display:inline-flex;align-items:center;justify-content:center;color:var(--primary)}
+.demo-out b{font-family:var(--f-display);font-size:1.3rem;color:var(--ink);display:block}
+.demo-out span.t{font-size:.92rem;line-height:1.45;color:var(--ink-soft)}
+.fl{position:absolute;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:12px 16px;box-shadow:var(--shadow);font-size:.86rem;display:flex;gap:10px;align-items:center;animation:bob 6s ease-in-out infinite alternate;max-width:78%}
+.fl b{display:block;font-size:.9rem}
+.fl1{top:2px;right:0}.fl2{bottom:2px;left:0;animation-delay:-3s}
+@media (min-width:960px){.fl1{right:-26px}.fl2{left:-34px}}
+@keyframes bob{to{transform:translateY(-9px)}}
+.lstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+.lstat{background:var(--surface);padding:24px 22px;display:flex;flex-direction:column;gap:2px}
+.lstat b{font-family:var(--f-display);font-size:2.4rem;line-height:1.1;font-weight:600}
+.lh{display:flex;flex-direction:column;gap:12px;margin-bottom:30px;max-width:62ch}
+.lh h2{font-size:clamp(1.9rem,5vw,2.9rem)}
+.kicker{font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--primary)}
+.bento{display:grid;gap:16px;grid-template-columns:repeat(6,minmax(0,1fr))}
+.bt{border-radius:32px;padding:28px;display:flex;flex-direction:column;gap:14px;min-width:0;overflow:hidden;position:relative}
+.bt h3{font-size:1.45rem}
+.bt p{color:var(--ink-soft);line-height:1.6}
+.bt.s4{grid-column:span 4}.bt.s3{grid-column:span 3}.bt.s2{grid-column:span 2}.bt.s6{grid-column:span 6}
+.t-sage{background:var(--sage)}.t-clay{background:var(--clay);color:var(--clay-ink)}.t-clay p,.t-clay h3{color:inherit}
+.t-surf{background:var(--surface);border:1px solid var(--line)}.t-blue{background:var(--blue-soft)}
+.t-ink{background:var(--ink);color:var(--bg)}.t-ink h3{color:var(--bg)}.t-ink p{color:color-mix(in srgb,var(--bg) 78%,transparent)}
+@media (max-width:900px){.bento{grid-template-columns:minmax(0,1fr)}.bt.s4,.bt.s3,.bt.s2,.bt.s6{grid-column:auto}}
+@media (min-width:901px) and (max-width:1100px){.bt.s2{grid-column:span 3}}
+.mini-bars{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+.mini-bars div{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center;font-size:.86rem}
+.mini-bars i{display:block;height:11px;border-radius:99px;background:var(--primary);width:var(--w)}
+.chipset{display:flex;flex-wrap:wrap;gap:8px}
+.chipset span{background:var(--surface-2);border-radius:999px;padding:7px 14px;font-weight:600;font-size:.88rem}
+.skel{display:flex;flex-direction:column;gap:8px;margin-top:2px}
+.skel i{display:block;height:9px;border-radius:99px;background:color-mix(in srgb,currentColor 20%,transparent)}
+.orb-mini{width:96px;height:96px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--sage),var(--primary));animation:pulse 5s ease-in-out infinite;align-self:flex-start}
+@keyframes pulse{0%,100%{transform:scale(.78)}50%{transform:scale(1.1)}}
+.levelbar{display:flex;height:16px;border-radius:99px;overflow:hidden;background:var(--surface-2);gap:2px}
+.levelbar i{display:block;height:100%}
+.lv-urgent{background:var(--lv-urgent)}.lv-attention{background:var(--lv-attn)}.lv-watch{background:var(--lv-watch)}.lv-stable{background:var(--lv-ok)}.lv-none{background:var(--lv-none)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:.88rem}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:7px}
+.steps3{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr))}
+.st{background:var(--surface);border:1px solid var(--line);border-radius:30px;padding:28px;display:flex;flex-direction:column;gap:12px}
+.st .no{width:46px;height:46px;border-radius:50%;background:var(--sage);color:var(--sage-ink);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:1.3rem;font-weight:600}
+.st p{color:var(--ink-soft)}
+.aud{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr))}
+.ap{border-radius:34px;padding:34px 30px;display:flex;flex-direction:column;gap:18px}
+.ap h3{font-size:1.7rem}
+.ap ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.ap li{display:flex;gap:12px;align-items:flex-start;line-height:1.5}
+.ap li .ico{margin-top:2px;flex:none}
+.ap.stu{background:var(--sage);color:var(--sage-ink)}.ap.stu h3{color:var(--ink)}.ap.stu li{color:var(--ink)}
+.ap.prof{background:var(--blue-soft);color:var(--ink)}.ap.prof h3,.ap.prof li{color:var(--ink)}
+.ap.dir{background:var(--ink);color:var(--bg)}.ap.dir h3{color:var(--bg)}
+.twocol{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr))}
+.listcard{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:12px}
+.listcard ul{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;color:var(--ink-soft)}
+.cta{border-radius:40px;background:var(--primary);color:var(--on-primary);padding:56px 28px;text-align:center;display:flex;flex-direction:column;gap:20px;align-items:center}
+.cta h2{color:inherit;font-size:clamp(2rem,6vw,3.2rem)}
+.cta p{max-width:48ch;opacity:.92}
+.lfoot{margin-top:84px;border-top:1px solid var(--line);padding-block:44px 8px;display:grid;gap:30px;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr))}
+.lfoot h4{font-family:var(--f-body);font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:10px;font-weight:700}
+.lfoot a,.lfoot button.lk{display:block;color:var(--ink);text-decoration:none;padding:5px 0;background:none;border:0;font:inherit;cursor:pointer;text-align:left}
+.lfoot a:hover,.lfoot button.lk:hover{color:var(--primary);text-decoration:underline}
+.lfine{padding-block:22px 6px;color:var(--ink-soft);font-size:.86rem;line-height:1.6;max-width:90ch}
+@supports (animation-timeline:view()){
+  .rv{animation:rv linear both;animation-timeline:view();animation-range:entry 0% entry 32%}
+  @keyframes rv{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+}
+@media (prefers-reduced-motion:reduce){.rv{animation:none!important;opacity:1!important;transform:none!important}}
+
+/* director */
+.dstats{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr))}
+.dstat{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:20px 22px;display:flex;flex-direction:column;gap:4px}
+.dstat b{font-family:var(--f-display);font-size:2.5rem;line-height:1.05;font-weight:600;font-variant-numeric:tabular-nums}
+.dgrid{display:grid;gap:18px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:920px){.dgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.dgrid .panel{padding:26px 24px;gap:16px}
+.hbar{display:grid;grid-template-columns:128px minmax(0,1fr) 32px;gap:10px;align-items:center;font-size:.9rem}
+.hbar .bar{height:12px}
+@media (max-width:480px){.hbar{grid-template-columns:96px minmax(0,1fr) 28px}}
+.alert{background:var(--crit-soft);color:var(--crit-ink);border-radius:26px;padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+.alert h3{color:inherit}
+.mini-row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.mini-row:last-child{border-bottom:0}
+.filters{display:flex;gap:12px;flex-wrap:wrap}
+.filters .fld{flex:1 1 180px}
+.slist{background:var(--surface);border:1px solid var(--line);border-radius:28px;overflow:hidden}
+.swrap{border-bottom:1px solid var(--line)}.swrap:last-child{border-bottom:0}
+button.srow{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.4fr) auto;gap:10px 20px;align-items:center;width:100%;text-align:left;background:none;border:0;padding:16px 22px;cursor:pointer;min-height:72px}
+button.srow:hover{background:var(--surface-2)}
+@media (max-width:700px){button.srow{grid-template-columns:minmax(0,1fr) auto}button.srow .chips{grid-column:1/-1;order:3}}
+.sbody{padding:6px 22px 26px;display:grid;gap:26px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:920px){.sbody{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.spark{color:var(--primary);flex:none}
+.pb{border-left:3px solid var(--primary);padding:2px 0 2px 16px;display:flex;flex-direction:column;gap:6px}
+.pb ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.choice{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;border:1px solid var(--line);border-radius:20px;background:var(--bg);cursor:pointer;line-height:1.5;transition:background .15s,border-color .15s}
+.choice:hover{border-color:var(--primary);background:var(--sage)}
+.choice input{margin-top:4px;width:20px;height:20px;accent-color:var(--primary);flex:none}
+.choice:has(input:checked){border-color:var(--primary);background:var(--sage)}
+
+.nl{background:none;border:0;font:inherit;cursor:pointer}
+.foot{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px;color:var(--ink-soft);font-size:.88rem;line-height:1.6}
+.lfine{color:var(--ink-soft);font-size:.9rem;line-height:1.6;max-width:70ch;margin-top:22px}
+.anch{display:flex;justify-content:space-between;gap:12px;font-size:.86rem;color:var(--ink-soft)}
+.srow .chips{min-width:0}
+@media (max-width:600px){.fl1{right:8px;top:-4px}.fl2{left:8px;bottom:-4px}}
+.mock{padding-block:18px}
+.tabs.fit .tab{flex:1 1 auto;text-align:center}
+@media (max-width:620px){.tabs.fit .tab{padding-inline:6px;font-size:.92rem}}
+@media (max-width:620px){.tab{padding:11px 13px}.tabs{gap:2px}}
+
+/* ===== professional polish: brand gradient, glass header, depth, rhythm ===== */
+:root{--g1:#1B6FC2;--g2:#128A5C;--on-g:#FFFFFF;--navy:#0F1B33;--navy-2:#16294A;--glow:rgba(27,111,194,.35);--brand-grad:linear-gradient(135deg,var(--g1),var(--g2))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--g1:#4C9BEA;--g2:#3FBF86;--on-g:#08141A;--navy:#0B1626;--navy-2:#12233D;--glow:rgba(76,155,234,.3)}}
+:root[data-theme="dark"]{--g1:#4C9BEA;--g2:#3FBF86;--on-g:#08141A;--navy:#0B1626;--navy-2:#12233D;--glow:rgba(76,155,234,.3)}
+header.top{background:color-mix(in srgb,var(--bg) 78%,transparent);-webkit-backdrop-filter:saturate(1.4) blur(16px);backdrop-filter:saturate(1.4) blur(16px);border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.btn{transition:transform .15s,box-shadow .2s,border-color .15s,background .15s}
+.btn.primary{background:var(--brand-grad);color:var(--on-g);border-color:transparent;box-shadow:0 10px 24px -8px var(--glow)}
+.btn.primary:hover{filter:none;transform:translateY(-2px);box-shadow:0 16px 30px -10px var(--glow)}
+.btn.light{box-shadow:0 8px 20px -10px rgba(0,0,0,.35)}
+.btn.light:hover{transform:translateY(-2px)}
+.tab[aria-current="page"]{background:color-mix(in srgb,var(--g1) 14%,var(--surface));color:var(--ink);box-shadow:inset 0 -2px 0 var(--g1)}
+.panel,.req,.dstat,.listcard,.st{box-shadow:0 1px 2px rgba(15,27,51,.04),0 14px 34px -14px rgba(15,27,51,.18)}
+.dstat{position:relative;overflow:hidden}.dstat::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:var(--brand-grad)}
+.dstat b{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.help-pill{box-shadow:0 8px 20px -10px rgba(138,35,24,.45)}
+
+/* landing hero */
+.lhero{background:radial-gradient(1200px 520px at 85% -10%,color-mix(in srgb,var(--g1) 16%,transparent),transparent 60%),radial-gradient(900px 480px at 0% 10%,color-mix(in srgb,var(--g2) 15%,transparent),transparent 60%)}
+.lhero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(color-mix(in srgb,var(--ink) 9%,transparent) 1.1px,transparent 1.2px);background-size:26px 26px;-webkit-mask-image:linear-gradient(180deg,#000 0,transparent 75%);mask-image:linear-gradient(180deg,#000 0,transparent 75%)}
+.b1{background:color-mix(in srgb,var(--g2) 38%,var(--bg))}.b2{background:var(--clay)}.b3{background:color-mix(in srgb,var(--g1) 30%,var(--bg))}
+.lhero h1{font-size:clamp(2.7rem,9vw,5rem);letter-spacing:-.03em;line-height:1.02}
+.lhero h1 em{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:600;padding-right:.06em}
+.lhero .badge{background:color-mix(in srgb,var(--g1) 12%,var(--surface));color:var(--ink);border:1px solid color-mix(in srgb,var(--g1) 25%,transparent)}
+.lhero .badge .ico{color:var(--g1)}
+.door{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 36px -18px rgba(15,27,51,.5)}
+.door::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none}
+.door.stu{background:linear-gradient(145deg,#16A06F,#0B6B47);color:#fff}
+.door.prof{background:linear-gradient(145deg,#2C86E0,#134F8F);color:#fff}
+.door.dir{background:linear-gradient(145deg,#1B2E52,#0A1325);color:#fff}
+.door .go{transition:gap .2s}.door:hover .go{gap:14px}
+.mock .illo{border:6px solid var(--surface);border-radius:38px;transform:rotate(-1.4deg);transition:transform .4s}
+.mock:hover .illo{transform:rotate(0)}
+.fl{border-radius:18px;backdrop-filter:blur(8px)}
+.lstats{border:0;background:transparent;gap:14px}
+.lstat{border:1px solid var(--line);border-radius:24px;box-shadow:0 14px 30px -18px rgba(15,27,51,.25)}
+.lstat b{background:var(--brand-grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-size:2.6rem}
+.kicker{display:inline-flex;align-items:center;gap:8px;width:fit-content;background:color-mix(in srgb,var(--g1) 10%,var(--surface));color:color-mix(in srgb,var(--g1) 85%,var(--ink));border-radius:999px;padding:6px 14px;letter-spacing:.1em}
+.t-clay .kicker,.t-ink .kicker{background:rgba(255,255,255,.16);color:inherit}
+.lh h2{font-size:clamp(2rem,5.6vw,3.2rem);letter-spacing:-.02em}
+.bt{box-shadow:0 20px 40px -26px rgba(15,27,51,.35);transition:transform .25s,box-shadow .25s}
+.bt:hover{transform:translateY(-4px);box-shadow:0 28px 50px -24px rgba(15,27,51,.4)}
+.t-sage{background:linear-gradient(150deg,color-mix(in srgb,var(--g2) 18%,var(--surface)),color-mix(in srgb,var(--g2) 8%,var(--bg)))}
+.t-blue{background:linear-gradient(150deg,color-mix(in srgb,var(--g1) 20%,var(--surface)),color-mix(in srgb,var(--g1) 8%,var(--bg)))}
+.t-ink{background:radial-gradient(520px 260px at 90% 0,color-mix(in srgb,var(--g1) 45%,transparent),transparent 70%),linear-gradient(150deg,var(--navy-2),var(--navy));color:#EAF1F8}
+.t-ink h3{color:#fff}.t-ink p{color:rgba(234,241,248,.8)}
+.mini-bars i{background:var(--brand-grad)}
+.orb-mini{background:radial-gradient(circle at 35% 30%,#fff,var(--g2) 55%,var(--g1))}
+.steps3{counter-reset:s}
+.st{border-radius:30px;position:relative;overflow:hidden}
+.st .no{background:var(--brand-grad);color:var(--on-g);box-shadow:0 10px 20px -8px var(--glow)}
+.ap.stu{background:linear-gradient(150deg,color-mix(in srgb,var(--g2) 20%,var(--surface)),color-mix(in srgb,var(--g2) 8%,var(--bg)))}
+.ap.prof{background:linear-gradient(150deg,color-mix(in srgb,var(--g1) 22%,var(--surface)),color-mix(in srgb,var(--g1) 8%,var(--bg)))}
+.ap.dir{background:radial-gradient(480px 240px at 100% 0,color-mix(in srgb,var(--g1) 40%,transparent),transparent 70%),linear-gradient(150deg,var(--navy-2),var(--navy));color:#EAF1F8}
+.ap.dir h3{color:#fff}.ap.dir li{color:#EAF1F8}
+.ap li .ico{color:var(--g1)}.ap.dir li .ico{color:#9CC9F5}
+.cta{position:relative;overflow:hidden;background:radial-gradient(600px 300px at 15% 0,rgba(255,255,255,.22),transparent 65%),radial-gradient(500px 300px at 100% 100%,rgba(0,0,0,.25),transparent 65%),linear-gradient(135deg,#1B6FC2,#0F8A5E);color:#fff}
+.cta .btn.light{color:#0F1B33}.cta .btn.line-light{color:#fff;border-color:rgba(255,255,255,.7)}
+.phone{border-radius:40px;box-shadow:var(--shadow-lg);position:relative}
+.range{accent-color:var(--g1)}
+.demo-out{background:linear-gradient(135deg,color-mix(in srgb,var(--g2) 18%,var(--surface)),color-mix(in srgb,var(--g1) 14%,var(--surface)))}
+.faq-l{display:flex;flex-direction:column;gap:10px;max-width:820px}
+.faq-l details{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:4px 22px;transition:box-shadow .2s}
+.faq-l details[open]{box-shadow:0 14px 30px -18px rgba(15,27,51,.3);border-color:color-mix(in srgb,var(--g1) 35%,var(--line))}
+.faq-l summary{cursor:pointer;list-style:none;padding:16px 0;font-weight:600;display:flex;justify-content:space-between;gap:14px;align-items:center;min-height:56px}
+.faq-l summary::-webkit-details-marker{display:none}
+.faq-l summary::after{content:"+";font-size:1.5rem;line-height:1;color:var(--g1);transition:transform .2s}
+.faq-l details[open] summary::after{transform:rotate(45deg)}
+.faq-l p{color:var(--ink-soft);padding-bottom:18px;line-height:1.65}
+.trust{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;color:var(--ink-soft);font-size:.92rem}
+.trust span{display:inline-flex;gap:8px;align-items:center}.trust .ico{color:var(--g2)}
+.lfoot{border-top:0;position:relative}.lfoot::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--line) 15%,var(--line) 85%,transparent)}
+.menu{box-shadow:0 30px 70px -20px rgba(15,27,51,.45)}
+.nl:hover{background:color-mix(in srgb,var(--g1) 10%,var(--surface))}
+</style>
+
+<header class="top"><div class="wrap" id="hdr"></div></header>
+
+<main id="main" tabindex="-1"></main>
+
+<footer class="wrap" id="ftr"></footer>
+
+<div id="dlg-root"></div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<script>
+"use strict";
+/* ---------- helpers ---------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const DAY = 86400000;
+
+/* ---------- icons ---------- */
+const IC = {
+  help: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6"/><path d="M5.6 5.6l3.8 3.8M14.6 14.6l3.8 3.8M18.4 5.6l-3.8 3.8M9.4 14.6l-3.8 3.8"/>',
+  book: '<path d="M3 5.5C5 4.5 8 4.5 12 6.5v13C8 17.5 5 17.5 3 18.5z"/><path d="M21 5.5c-2-1-5-1-9 1v13c4-2 7-2 9-1z"/>',
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  wind: '<path d="M3 9h11a3 3 0 1 0-3-3"/><path d="M3 13h15a3 3 0 1 1-3 3"/><path d="M3 17h7"/>',
+  arrow: '<path d="M5 12h14M13 6l6 6-6 6"/>',
+  back: '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+  chev: '<path d="M6 9l6 6 6-6"/>',
+  cap: '<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/>',
+  steth: '<path d="M6 3v6a4 4 0 0 0 8 0V3"/><path d="M10 13v2a5 5 0 0 0 10 0v-2"/><circle cx="20" cy="11" r="2"/>',
+  chat: '<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/>',
+  ext: '<path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  mood: '<path d="M12 20C5 15 3 11.5 3 8.5A4.5 4.5 0 0 1 12 6.5a4.5 4.5 0 0 1 9 2C21 11.5 19 15 12 20z"/>',
+  worry: '<path d="M2 12c3-6 5-6 8 0s5 6 8 0 3-3 4-2"/>',
+  focus: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2"/>',
+  moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  timer: '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 3h6"/>',
+  eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  close: '<path d="M6 6l12 12M18 6L6 18"/>'
+};
+function ic(n, s) { s = s || 22; return `<svg class="ico" viewBox="0 0 24 24" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IC[n]}</svg>`; }
+
+/* ---------- brand graphics ---------- */
+function logoSvg(size) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" role="img" aria-label="StuWell logo">
+<defs>
+<linearGradient id="lgTop" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1B86DC"/><stop offset="1" stop-color="#0A60B5"/></linearGradient>
+<linearGradient id="lgBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C7BD0"/><stop offset="1" stop-color="#0A4C9A"/></linearGradient>
+<linearGradient id="lgSmile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1CC878"/><stop offset="1" stop-color="#0E9F5E"/></linearGradient>
+</defs>
+<circle cx="100" cy="100" r="96" fill="#fff" stroke="#E4DED0" stroke-width="2"/>
+<path d="M64 80V94Q64 109 100 109Q136 109 136 94V80Z" fill="url(#lgBase)"/>
+<polygon points="31,62 100,34 169,62 100,91" fill="url(#lgTop)"/>
+<polygon points="52,60 100,42 136,55 90,70" fill="#fff" opacity=".22"/>
+<polyline points="31,62 100,91 169,62" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+<line x1="168.6" y1="62" x2="168.6" y2="94" stroke="#2A7FD4" stroke-width="5" stroke-linecap="round"/>
+<circle cx="168.6" cy="101" r="6.5" fill="#2A7FD4"/>
+<path d="M41 128V144Q41 160 57 160H97" fill="none" stroke="url(#lgSmile)" stroke-width="24"/>
+<circle cx="41" cy="128" r="12" fill="#1BC577"/>
+<path d="M159 128V144Q159 160 143 160H103" fill="none" stroke="url(#lgSmile)" stroke-width="24"/>
+<circle cx="159" cy="128" r="12" fill="#1BC577"/>
+</svg>`;
+}
+function illoSvg() {
+  const f = v => `style="fill:var(--${v})"`;
+  const rays = [0, 45, 90, 135, 180, 225, 270, 315].map(a => `<line x1="268" y1="${98 - 52}" x2="268" y2="${98 - 63}" transform="rotate(${a} 268 98)" stroke-width="5" stroke-linecap="round" style="stroke:var(--ill-sun)"/>`).join("");
+  const star = (x, y, s) => `<path transform="translate(${x} ${y}) scale(${s})" d="M0-10C1 -4 4 -1 10 0 4 1 1 4 0 10-1 4-4 1-10 0-4-1-1-4 0-10z" ${f("ill-sun")}/>`;
+  return `<svg viewBox="0 0 400 300" role="img" aria-label="A student looking up at the sun coming out from behind a cloud" preserveAspectRatio="xMidYMid slice">
+<defs><linearGradient id="skyg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--ill-a)"/><stop offset="1" style="stop-color:var(--ill-b)"/></linearGradient></defs>
+<rect width="400" height="300" fill="url(#skyg)"/>
+${rays}<circle cx="268" cy="98" r="40" ${f("ill-sun")}/>
+<g ${f("ill-c2")}><rect x="250" y="140" width="104" height="26" rx="13"/><circle cx="276" cy="140" r="18"/><circle cx="308" cy="130" r="24"/><circle cx="334" cy="143" r="15"/></g>
+<g ${f("ill-c1")}><rect x="88" y="122" width="130" height="34" rx="17"/><circle cx="122" cy="120" r="24"/><circle cx="154" cy="104" r="32"/><circle cx="192" cy="122" r="22"/></g>
+<g ${f("ill-c1")} opacity=".85"><rect x="22" y="68" width="66" height="20" rx="10"/><circle cx="44" cy="68" r="14"/><circle cx="68" cy="62" r="18"/></g>
+${star(60, 170, 1)}${star(352, 62, .8)}${star(332, 214, .7)}${star(30, 130, .55)}
+<ellipse cx="200" cy="296" rx="240" ry="46" ${f("ill-ground")}/>
+<rect x="116" y="198" width="24" height="42" rx="9" ${f("ill-bag")}/>
+<rect x="132" y="238" width="12" height="28" rx="5" ${f("ill-pants")}/><rect x="150" y="238" width="12" height="28" rx="5" ${f("ill-pants")}/>
+<ellipse cx="136" cy="268" rx="11" ry="5" ${f("ill-hair")}/><ellipse cx="157" cy="268" rx="11" ry="5" ${f("ill-hair")}/>
+<rect x="128" y="192" width="40" height="52" rx="16" ${f("ill-top")}/>
+<line x1="132" y1="208" x2="125" y2="236" stroke-width="11" stroke-linecap="round" style="stroke:var(--ill-top)"/>
+<line x1="164" y1="206" x2="190" y2="176" stroke-width="11" stroke-linecap="round" style="stroke:var(--ill-top)"/>
+<circle cx="192" cy="172" r="6.5" ${f("ill-skin")}/>
+<circle cx="148" cy="172" r="17" ${f("ill-skin")}/>
+<circle cx="141" cy="153" r="7" ${f("ill-hair")}/>
+<path d="M131 171a17 17 0 0 1 34 0c-6-7-22-9-34 0z" ${f("ill-hair")}/>
+<circle cx="144" cy="173" r="1.7" ${f("ill-hair")}/><circle cx="154" cy="173" r="1.7" ${f("ill-hair")}/>
+<path d="M143 180q5 4 10 0" fill="none" stroke-width="1.8" stroke-linecap="round" style="stroke:var(--ill-hair)"/>
+</svg>`;
+}
+function wIcon(k, s) {
+  s = s || 48;
+  const cloud = '<path d="M14 36h20a8 8 0 0 0 .5-16A11 11 0 0 0 13 23a7 7 0 0 0 1 13z"/>';
+  const sun = '<circle cx="24" cy="24" r="7"/><path d="M24 6v4M24 38v4M6 24h4M38 24h4M11.3 11.3l2.8 2.8M33.9 33.9l2.8 2.8M36.7 11.3l-2.8 2.8M14.1 33.9l-2.8 2.8"/>';
+  const body = {
+    clear: sun,
+    mostly: '<circle cx="17" cy="17" r="6"/><path d="M17 4v3M5 17H2M7 7L5 5M27 7l2-2"/><path d="M18 40h18a7 7 0 0 0 .5-14A10 10 0 0 0 18 28a6 6 0 0 0 0 12z"/>',
+    cloudy: cloud,
+    rain: '<path d="M14 30h20a8 8 0 0 0 .5-16A11 11 0 0 0 13 17a7 7 0 0 0 1 13z"/><path d="M16 36l-2 5M25 36l-2 5M34 36l-2 5"/>',
+    storm: '<path d="M14 28h20a8 8 0 0 0 .5-16A11 11 0 0 0 13 15a7 7 0 0 0 1 13z"/><path d="M26 28l-6 8h6l-4 8"/>'
+  }[k];
+  return `<svg class="ico" viewBox="0 0 48 48" width="${s}" height="${s}" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+}
+
+/* ---------- check-in content ---------- */
+const QUESTIONS = [
+  { k: "mood", q: "How is your mood today?", a: ["Very low", "Very good"] },
+  { k: "sleep", q: "How did you sleep?", a: ["Poorly", "Rested"] },
+  { k: "stress", q: "How stressed do you feel?", a: ["Calm", "Overwhelmed"] },
+  { k: "social", q: "How connected do you feel to the people around you?", a: ["Alone", "Supported"] },
+  { k: "workload", q: "How heavy is your study load right now?", a: ["Light", "Too much"] }
+];
+const CONCERNS = [
+  { k: "bullying", t: "Someone is bullying, threatening or excluding me" },
+  { k: "home", t: "Things are difficult at home" },
+  { k: "health", t: "I am physically unwell or in pain" },
+  { k: "unsafe", t: "I feel unsafe, or I have thoughts of hurting myself" },
+  { k: "wantsTalk", t: "I would like to talk to someone" }
+];
+const REASON = { bullying: "Bullying", home: "Difficulties at home", health: "Physical health", wantsTalk: "Wants to talk", lowMood: "Low mood", sleep: "Poor sleep", stress: "High stress", lonely: "Feeling alone", workload: "Heavy study load" };
+const TIPS = {
+  lowMood: ["Do one small thing today that you usually enjoy.", "Tell someone you trust how you feel, even in one sentence."],
+  sleep: ["Keep the same bedtime for a week.", "Put your phone away for the last hour before sleeping."],
+  stress: ["Try breathing in for 4 seconds and out for 6, five times.", "Write down what you can control today, and leave the rest."],
+  lonely: ["Send one friendly message to a classmate.", "Join one activity or club that fits your interests."],
+  workload: ["List everything due, then choose only the next one.", "Ask your teacher about an extension. It is a normal request."],
+  bullying: ["It is not your fault. Tell a teacher or the director you trust.", "Stay near friends or adults during breaks."],
+  home: ["You do not have to explain everything. Even one trusted adult at school can help.", "Ask the counsellor for a quiet space to talk."],
+  health: ["Visit the school nurse or a doctor if you are in pain or unwell.", "You can prepare a request for an exam change, an absence or mobility support in the Medical request tab."]
+};
+const TIP_ORDER = ["bullying", "home", "health", "lowMood", "lonely", "sleep", "stress", "workload"];
+const FORECASTS = [
+  { min: 4.2, k: "clear", name: "Clear skies", text: "Today looks bright. Notice what is helping and keep it going." },
+  { min: 3.4, k: "mostly", name: "Mostly sunny", text: "Mostly steady, with a few clouds. A small reset can keep it that way." },
+  { min: 2.6, k: "cloudy", name: "Partly cloudy", text: "A mixed day. Some things feel heavy, and it is worth noticing that." },
+  { min: 1.9, k: "rain", name: "Rainy", text: "A hard day. You do not have to carry it alone, and small steps count." },
+  { min: 0, k: "storm", name: "Stormy", text: "A very heavy day. Be gentle with yourself and reach out to someone today." }
+];
+
+/* ---------- check-ups (screeners) ---------- */
+const OPT4 = ["Not at all", "Several days", "More than half the days", "Nearly every day"];
+const SCR = {
+  phq9: { name: "Mood check", tool: "PHQ-9", topic: "depression", time: "2 minutes", icon: "mood",
+    about: "Nine questions used by doctors worldwide to screen for low mood and depression.",
+    intro: "Over the last 2 weeks, how often have you been bothered by the following problems?", opts: OPT4,
+    qs: ["Little interest or pleasure in doing things", "Feeling down, depressed or hopeless", "Trouble falling or staying asleep, or sleeping too much", "Feeling tired or having little energy", "Poor appetite or overeating", "Feeling bad about yourself, or that you are a failure or have let yourself or your family down", "Trouble concentrating on things, such as reading or watching television", "Moving or speaking so slowly that other people could notice, or the opposite: being so fidgety or restless that you move around a lot more than usual", "Thoughts that you would be better off dead, or of hurting yourself in some way"],
+    short: ["Loss of interest", "Feeling down", "Sleep", "Low energy", "Appetite", "Low self-worth", "Concentration", "Restlessness or slowing", "Thoughts of self-harm"] },
+  gad7: { name: "Anxiety check", tool: "GAD-7", topic: "anxiety", time: "2 minutes", icon: "worry",
+    about: "Seven questions used by doctors worldwide to screen for anxiety.",
+    intro: "Over the last 2 weeks, how often have you been bothered by the following problems?", opts: OPT4,
+    qs: ["Feeling nervous, anxious or on edge", "Not being able to stop or control worrying", "Worrying too much about different things", "Trouble relaxing", "Being so restless that it is hard to sit still", "Becoming easily annoyed or irritable", "Feeling afraid, as if something awful might happen"],
+    short: ["Feeling on edge", "Cannot stop worrying", "Worrying about many things", "Trouble relaxing", "Restlessness", "Irritability", "Fear that something awful will happen"] },
+  asrs: { name: "Attention check", tool: "ASRS v1.1", topic: "adhd", time: "1 minute", icon: "focus",
+    about: "Six questions from the World Health Organization adult ADHD self-report scale.",
+    intro: "Choose the answer that best describes how you have felt and acted over the past 6 months.",
+    opts: ["Never", "Rarely", "Sometimes", "Often", "Very often"],
+    qs: ["How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?", "How often do you have difficulty getting things in order when you have to do a task that requires organization?", "How often do you have problems remembering appointments or obligations?", "When you have a task that requires a lot of thought, how often do you avoid or delay getting started?", "How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?", "How often do you feel overly active and compelled to do things, as if you were driven by a motor?"],
+    short: ["Finishing the final details", "Organizing tasks", "Remembering appointments", "Delaying getting started", "Fidgeting", "Feeling driven by a motor"] }
+};
+function scrReport(kind, a) {
+  const S0 = SCR[kind], sum = a.reduce((x, y) => x + y, 0);
+  let tone, label, title, text, score, max, safety = false, stood = [];
+  if (kind === "phq9") {
+    score = sum; max = 27; safety = a[8] > 0;
+    const b = score <= 4 ? 0 : score <= 9 ? 1 : score <= 14 ? 2 : score <= 19 ? 3 : 4;
+    label = ["Minimal", "Mild", "Moderate", "Moderately severe", "Severe"][b]; tone = ["ok", "warn", "attn", "crit", "crit"][b];
+    title = ["Few signs of low mood", "Some signs of low mood", "Signs of low mood worth looking at", "Significant signs of depression", "Many signs of depression"][b];
+    text = [
+      "Over the last 2 weeks you reported few signs of depression. Keep the habits that protect your mood: regular sleep, movement and time with people you like.",
+      "You reported some signs of low mood. This is common and often improves with small changes, but keep watching it. If it continues for two more weeks, talk to someone.",
+      "Your answers show a level of low mood that health professionals recommend looking at properly. This does not mean you have depression, but it is a good reason to talk to a counsellor or a doctor.",
+      "Your answers show significant signs of depression. Please talk to a counsellor, a doctor or a trusted adult soon. Treatment works, and you do not have to manage this alone.",
+      "Your answers show many signs of depression, and they are affecting you a lot. Please speak to a counsellor or a doctor this week, and tell an adult you trust."][b];
+    stood = a.map((v, i) => [v, i]).filter(x => x[0] >= 2).sort((x, y) => y[0] - x[0]).slice(0, 4).map(x => S0.short[x[1]]);
+  } else if (kind === "gad7") {
+    score = sum; max = 21;
+    const b = score <= 4 ? 0 : score <= 9 ? 1 : score <= 14 ? 2 : 3;
+    label = ["Minimal", "Mild", "Moderate", "Severe"][b]; tone = ["ok", "warn", "attn", "crit"][b];
+    title = ["Few signs of anxiety", "Some signs of anxiety", "Signs of anxiety worth looking at", "Many signs of anxiety"][b];
+    text = [
+      "Over the last 2 weeks you reported few signs of anxiety. Keep the routines that help you stay calm.",
+      "You reported some worry and tension. This is common, especially around exams. The steps below usually help, and talking to someone helps even more.",
+      "Your answers show a level of anxiety that health professionals recommend looking at properly. This does not mean you have an anxiety disorder, but it is a good reason to talk to a counsellor or a doctor.",
+      "Your answers show many signs of anxiety, and they are affecting you a lot. Please speak to a counsellor or a doctor soon. Anxiety is very treatable."][b];
+    stood = a.map((v, i) => [v, i]).filter(x => x[0] >= 2).sort((x, y) => y[0] - x[0]).slice(0, 4).map(x => S0.short[x[1]]);
+  } else {
+    score = a.filter((v, i) => i < 3 ? v >= 2 : v >= 3).length; max = 6;
+    const b = score >= 4 ? 2 : score >= 2 ? 1 : 0;
+    label = ["Few signs", "Some signs", "Many signs"][b]; tone = ["ok", "warn", "attn"][b];
+    title = ["Few signs of attention difficulties", "Some attention and organization difficulties", "Many answers match patterns seen in ADHD"][b];
+    text = [
+      "Your answers show few of the patterns linked to ADHD. If focus still feels hard, the tips below can help.",
+      "Some of your answers match attention and organization difficulties. ADHD is one possible reason, and so are stress, poor sleep, anxiety and low mood. Try the strategies below, and talk to someone if it continues.",
+      "Four or more of your six answers match patterns seen in ADHD. This questionnaire cannot diagnose ADHD, but a score like this means a professional evaluation is worth asking for. Poor sleep, anxiety and low mood can look similar, so a professional should look at the whole picture."][b];
+    stood = a.map((v, i) => [v, i]).filter(x => (x[1] < 3 ? x[0] >= 2 : x[0] >= 3)).map(x => S0.short[x[1]]);
+  }
+  return { kind, tone, label, title, text, score, max, stood, safety, topic: S0.topic,
+    scale: kind === "asrs" ? `${score} of 6 answers in the range linked to ADHD` : `${score} out of ${max}` };
+}
+
+/* ---------- support content ---------- */
+const TOPICS = [
+  { k: "depression", title: "Depression", tag: "Low mood that lasts",
+    what: "More than feeling sad. Depression is a health condition that lowers mood and energy for weeks. It is common in teenagers and adults, and it is treatable.",
+    signs: ["Feeling sad, empty or irritable most of the day for 2 weeks or more", "Losing interest in things you used to enjoy", "Sleeping much more or much less than usual", "Constant tiredness or trouble concentrating", "Feeling worthless or guilty", "Pulling away from friends and family"],
+    help: ["Tell one adult you trust how you have been feeling.", "Keep a simple routine: regular sleep, meals and a short walk each day.", "Do one small activity you used to enjoy, even if you do not feel like it.", "A counsellor, doctor or psychologist can help. Talking therapy works well."],
+    seek: "Get help if these feelings last more than 2 weeks, make study or daily life hard, or if you ever think about hurting yourself. If you have those thoughts, tell someone today.", screener: "phq9" },
+  { k: "anxiety", title: "Anxiety", tag: "Worry that is hard to control",
+    what: "Worry that is hard to control and also shows up in the body, for example a racing heart, a tight chest or stomach pain.",
+    signs: ["Worrying about many things and finding it hard to stop", "Feeling on edge, restless or easily irritated", "Muscle tension, headaches or stomach aches", "Trouble sleeping or concentrating", "Avoiding situations because they cause fear", "Sudden waves of panic"],
+    help: ["Slow breathing: in for 4 seconds, out for 6, five times.", "Ground yourself: name 5 things you see, 4 you can touch and 3 you hear.", "Write your worries down, then circle the ones you can act on.", "Limit caffeine and energy drinks, and keep a sleep routine.", "Face fears in small steps instead of avoiding them."],
+    seek: "Get help if worry is present most days, stops you doing things you need or want to do, or comes with panic attacks.", screener: "gad7" },
+  { k: "adhd", title: "ADHD and attention", tag: "Focus, organization, restlessness",
+    what: "ADHD is a difference in how the brain manages attention, activity and impulse control. It starts in childhood and shows up in more than one place, such as school and home. Only a qualified professional can diagnose it.",
+    signs: ["Trouble keeping attention on tasks or lessons", "Losing things, forgetting deadlines or appointments", "Difficulty organizing work and finishing tasks", "Putting off tasks that need long concentration", "Fidgeting or feeling restless when sitting still", "Acting or speaking before thinking, interrupting others"],
+    help: ["Break work into small steps with a timer, for example 25 minutes of work and a 5-minute break.", "Use lists, phone reminders and a visible weekly planner.", "Study in a quiet place with your phone out of reach.", "Move your body: short walks and sport help focus.", "Ask teachers about seating, extra time or written instructions."],
+    seek: "Poor sleep, stress, anxiety and low mood can look like ADHD, so a professional should look at the whole picture. Ask for an evaluation if attention problems have lasted for months and affect school or home.", screener: "asrs" },
+  { k: "burnout", title: "Exam stress and burnout", tag: "Drained by study demands",
+    what: "Feeling exhausted and overloaded by study demands for a long time, not only before an exam.",
+    signs: ["Exhaustion that sleep does not fix", "Dreading classes or feeling they are pointless", "Lower grades despite working harder", "Headaches, stomach aches or getting ill often", "Feeling cynical or detached"],
+    help: ["Plan the week and keep one real day off.", "Study in short blocks with breaks.", "Aim for 8 hours of sleep or more.", "Ask teachers about spreading deadlines.", "Keep one activity that is only for fun."],
+    seek: "If exhaustion lasts for weeks or you can no longer cope with your studies, talk to a counsellor." },
+  { k: "sleep", title: "Sleep problems", tag: "Hard to fall or stay asleep",
+    what: "Poor sleep lowers mood, focus and patience within a few days, and it makes stress and anxiety harder to handle.",
+    signs: ["Taking more than 30 minutes to fall asleep", "Waking in the night or very early", "Feeling tired all day", "Using the phone in bed late at night"],
+    help: ["Keep a fixed bedtime and wake time, also at weekends.", "No screens for the last hour before sleeping.", "Avoid caffeine after midday.", "Keep the room dark, quiet and cool.", "Write tomorrow's tasks down before bed so your mind can rest."],
+    seek: "If sleep problems last more than 3 weeks, or you snore loudly and stop breathing for moments, see a doctor." },
+  { k: "lonely", title: "Loneliness", tag: "Feeling left out",
+    what: "Feeling alone or left out, even when other people are around. It is common and it can be changed.",
+    signs: ["Feeling left out in a group", "Spending breaks or meals alone", "Avoiding group work or activities", "Feeling nobody understands you"],
+    help: ["Send one friendly message to a classmate.", "Join a club or activity linked to your interests.", "Ask a teacher for a clear role in group work.", "Tell someone how you feel."],
+    seek: "If loneliness comes with low mood that lasts, talk to a counsellor." },
+  { k: "bullying", title: "Bullying", tag: "Being targeted or excluded",
+    what: "Repeated unkind behavior, threats or exclusion, in person or online. It is never your fault.",
+    signs: ["Being teased, threatened or left out again and again", "Avoiding break time or certain places", "Not wanting to go to class", "Messages or posts meant to hurt you"],
+    help: ["Tell a teacher, a counsellor or the director you trust.", "Keep screenshots or notes of what happened, where and when.", "Stay near friends or adults during breaks.", "Do not answer back or take revenge."],
+    seek: "Tell your school as soon as you can, especially if you feel unsafe." }
+];
+const NOT_OK = [
+  { i: "cap", t: "Campus counselling", d: "Most schools and universities offer free, confidential counselling for enrolled students. Ask at the administration office, or look for “wellbeing” or “student services” on your institution’s website." },
+  { i: "steth", t: "A doctor or GP", d: "If low mood, anxiety or sleep problems have lasted more than two weeks, a doctor can talk through your options and refer you to specialist care." },
+  { i: "chat", t: "Someone you trust", d: "A friend, family member, tutor or school adult. You do not need the perfect words: “I’ve been struggling lately” is enough." }
+];
+const FAQ = [
+  ["How do I know if I need professional help?", "A good sign is when low mood, worry or poor sleep lasts more than two weeks, or starts to get in the way of your studies, friendships or daily life. You do not have to wait until things are “bad enough”. If you are unsure, a short chat with a counsellor or a doctor is a good way to find out."],
+  ["Will anyone find out if I ask for help?", "Counsellors and doctors keep what you say private. The exception is when someone is at risk of serious harm, and then they involve other adults to keep you safe. On StuWell, there is no account and no server: your check-ins stay in this browser, and you can clear them at any time from the Check-in tab."],
+  ["What do I say when I reach out?", "Keep it simple. You could say: “I have been feeling low and I would like to talk to someone.” You do not need to explain everything at once. The person listening will ask questions to help. The message builder on this page can write a first message for you."],
+  ["How does a medical request work?", "In the Medical request tab you choose what you need, add dates and a few details, and StuWell writes the request for you. You copy it into an email or give it to the administration with your medical certificate. StuWell cannot send it for you, but it keeps a list on this device so you can track whether it was sent, approved or declined."],
+  ["Is a check-up result a diagnosis?", "No. The mood, anxiety and attention checks are screening questionnaires. They show whether it is worth talking to a professional. Only a doctor or psychologist can diagnose anything."],
+  ["Is it normal to feel this way?", "Yes. Many students feel stressed, lonely or overwhelmed at some point, especially around exams and big changes. Feeling this way does not mean something is wrong with you, and it is a good reason to ask for support."],
+  ["What if I am worried about a friend?", "Check in with them privately and listen without judging. Let them know you care, and encourage them to talk to a trusted adult. If you think they are in danger, tell a teacher, a counsellor or an adult you trust straight away."]
+];
+
+/* ---------- calm tools content ---------- */
+const TOOLS = [
+  { k: "breathe", t: "Breathe", d: "Slow breathing with a guide", i: "wind" },
+  { k: "ground", t: "Ground", d: "5-4-3-2-1 for racing thoughts", i: "eye" },
+  { k: "dump", t: "Worry dump", d: "Write it out, then let it go", i: "pen" },
+  { k: "focus", t: "Focus timer", d: "25 minutes on, 5 off", i: "timer" },
+  { k: "wind", t: "Wind-down", d: "A short list for better sleep", i: "moon" }
+];
+const PATTERNS = {
+  calm: { name: "Calm 4-6", note: "In for 4, out for 6. Best for stress and exam nerves.", ph: [["Breathe in", 4, 1], ["Breathe out", 6, .6]] },
+  box: { name: "Box 4-4-4-4", note: "Equal steps in, hold, out, hold. Best for focus.", ph: [["Breathe in", 4, 1], ["Hold", 4, 1], ["Breathe out", 4, .6], ["Hold", 4, .6]] },
+  sleep: { name: "Sleep 4-7-8", note: "A long out-breath. Best before bed.", ph: [["Breathe in", 4, 1], ["Hold", 7, 1], ["Breathe out", 8, .6]] }
+};
+const GROUND = [
+  [5, "things you can see", "Look around slowly. Name them in your head."],
+  [4, "things you can feel", "Your feet on the floor, the chair, your sleeves, the air."],
+  [3, "things you can hear", "Near sounds first, then the ones far away."],
+  [2, "things you can smell", "If nothing, remember a smell you like."],
+  [1, "slow breath", "In through the nose, out through the mouth. You are here."]
+];
+const WIND = ["Put your phone away for the last hour", "Write tomorrow's tasks on paper", "No caffeine or energy drinks after midday", "Dim the lights and cool the room", "Set the same wake-up time for tomorrow"];
+
+/* ---------- message builder content ---------- */
+const TO = { friend: "A friend", family: "A family member", tutor: "A tutor or school adult", counsellor: "A campus counsellor", doctor: "A doctor" };
+const FOR = { low: "my mood", worry: "worry and stress", sleep: "sleeping", focus: "focusing on my studies", alone: "feeling alone", other: "how I have been feeling" };
+const HOWLONG = { days: "a few days", weeks: "about two weeks", months: "a few months", long: "a long time" };
+const WANT = { listen: "I would like someone to listen.", find: "I would like help finding the right support.", appt: "I would like to book an appointment.", study: "I would like to talk about my study load." };
+
+/* ---------- medical request content ---------- */
+const REQ_TYPES = { exam: "Exam schedule adjustment", absence: "Temporary medical absence", mobility: "Mobility or accessibility support", other: "Other health-related request" };
+const REQ_SUBJ = { exam: "Request: exam schedule adjustment", absence: "Request: temporary medical absence", mobility: "Request: mobility or accessibility support", other: "Request: health-related matter" };
+const REQ_TO = { director: "The director", admin: "The administration office", teacher: "My class teacher" };
+const REQ_STATUS = { prepared: ["Ready to send", "warn"], sent: ["Sent", "attn"], approved: ["Approved", "ok"], declined: ["Declined", "crit"] };
+
+/* ---------- emergency and help lines (Morocco first, global link) ---------- */
+const MA_EMERGENCY = [["Ambulance and SAMU", "15", "15"], ["Police", "19", "19"], ["Gendarmerie Royale", "177", "177"], ["General emergency", "112", "112"]];
+const MA_LINES = [["Kolona Maak", "8350", "8350", "For women and girls. Free."], ["Centre d’écoute 2511", "2511", "2511", "For children and young people. Free. Phone line daily, 9:00 to 16:00."]];
+
+/* ---------- extra icons and director content ---------- */
+Object.assign(IC, {
+  dots: '<circle cx="12" cy="5" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none"/><circle cx="12" cy="19" r="1.9" fill="currentColor" stroke="none"/>',
+  home: '<path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 4-7 8-7s7 2 8 7"/>',
+  chart: '<path d="M4 20V4M4 20h16M8 16v-5M12 16V8M16 16v-8"/>',
+  inbox: '<path d="M3 13l3-8h12l3 8v6H3z"/><path d="M3 13h5l1 3h6l1-3h5"/>',
+  send: '<path d="M21 3L10 14"/><path d="M21 3l-7 18-4-7-7-4z"/>',
+  trash: '<path d="M4 7h16M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  users: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-4 3.2-6 6.5-6s5.700 2 6.500 6"/><path d="M16 4.500a3.500 3.500 0 0 1 0 7M18 14c2 .7 3.200 2.700 3.500 6"/>',
+  lockc: '<rect x="5" y="11" width="14" height="9" rx="2.5"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.2"/>'
+});
+Object.assign(REASON, { unsafe: "Safety concern", screenSafety: "Screener: self-harm thoughts", screenPHQ: "Screener: low mood", screenGAD: "Screener: anxiety", screenADHD: "Screener: attention", decline: "Sharp decline" });
+const REASON_ORDER = ["unsafe", "screenSafety", "bullying", "home", "health", "screenPHQ", "screenGAD", "wantsTalk", "decline", "lowMood", "lonely", "sleep", "stress", "workload", "screenADHD"];
+const LEVELS = { urgent: 0, attention: 1, watch: 2, stable: 3, none: 4 };
+const LEVEL_LABEL = { urgent: "Urgent", attention: "Needs attention", watch: "Keep watching", stable: "Stable", none: "No recent check-in" };
+const LEVEL_TONE = { urgent: "crit", attention: "attn", watch: "warn", stable: "ok", none: "none" };
+const PLAYBOOK = {
+  unsafe: { title: "Feels unsafe or has thoughts of self-harm", tag: "Act today",
+    signs: "The student ticked the safety option or wrote about not coping.",
+    say: "Thank you for telling us. I am glad you did. You are not in trouble and you do not have to deal with this alone.",
+    do: ["Stay with the student and listen calmly. Do not leave them alone.", "Tell the school counsellor straight away.", "Follow the school safeguarding protocol, including contact with guardians as it directs.", "Write down what was said and when, and add it to the case notes."],
+    avoid: "Promising secrecy, minimizing what was said, or debating whether it is serious." },
+  screenSafety: { title: "Screener: thoughts of self-harm", tag: "Act today",
+    signs: "The student answered the self-harm question (item 9) of the PHQ-9 above “Not at all”.",
+    say: "Thank you for telling us. I am glad you did. You are not in trouble and you do not have to deal with this alone.",
+    do: ["Stay with the student and listen calmly. Do not leave them alone.", "Tell the school counsellor straight away.", "Follow the school safeguarding protocol, including contact with guardians as it directs.", "Write down what was said and when, and add it to the case notes."],
+    avoid: "Promising secrecy, minimizing what was said, or debating whether it is serious." },
+  bullying: { title: "Bullying or exclusion", tag: "This week",
+    signs: "Reports of being targeted, a drop in connection, avoiding break time or certain classmates.",
+    say: "I am sorry this is happening. It is not your fault. Can you tell me where and when it happens most?",
+    do: ["Meet the student privately and take notes of places, times and people.", "Do not confront the accused in front of the class.", "Plan a safe adult and a safe place for the student at break.", "Check in again within three days."],
+    avoid: "Asking the students to sort it out face to face, or telling the student to ignore it." },
+  home: { title: "Difficulties at home", tag: "This week",
+    signs: "Tiredness, withdrawal, missing materials, or a student saying home is hard.",
+    say: "I can hear that things are heavy right now. You do not have to share details. I am here if you want to.",
+    do: ["Offer a quiet private conversation, not in front of others.", "Involve the school counsellor or social worker.", "Adjust deadlines temporarily where possible.", "Follow protocol if there is any sign of harm."],
+    avoid: "Pressing for details, or contacting the family without agreeing the approach first." },
+  health: { title: "Physical health concern", tag: "This week",
+    signs: "Pain, frequent absences, low energy, or a student mentioning feeling unwell.",
+    say: "Thank you for telling me. Have you been able to see the nurse or a doctor about it?",
+    do: ["Refer to the school nurse or health contact.", "Allow rest breaks and flexible participation in sport.", "Check the Requests tab for a medical request from this student."],
+    avoid: "Doubting the student or sharing medical details widely." },
+  screenPHQ: { title: "Positive low-mood screener", tag: "This week",
+    signs: "The student scored in a range that health professionals recommend looking at on the PHQ-9.",
+    say: "I saw that things may be hard at the moment. I would like to help you find someone to talk to.",
+    do: ["Meet privately and listen. Do not try to diagnose.", "Refer to the school counsellor or a health professional for a full assessment.", "Check in again within a week."],
+    avoid: "Telling the student what they have, or sharing the result with classmates." },
+  screenGAD: { title: "Positive anxiety screener", tag: "This week",
+    signs: "The student scored in a range that health professionals recommend looking at on the GAD-7.",
+    say: "It sounds like worry has been taking up a lot of space lately. What is it about?",
+    do: ["Meet privately and listen. Do not try to diagnose.", "Teach a short breathing exercise and agree one small next step.", "Refer to the school counsellor for a full assessment."],
+    avoid: "Saying “do not worry” or adding pressure." },
+  screenADHD: { title: "Attention difficulties (ASRS screener)", tag: "Keep watching",
+    signs: "Four or more of the six ASRS screener items were positive. This is a screening result, not a diagnosis.",
+    say: "I noticed that focusing and organizing work has been hard lately. Let us find what helps you.",
+    do: ["Meet privately and avoid labels.", "Offer practical supports: written instructions, tasks in small steps, a seat away from distractions.", "Suggest an evaluation by a doctor or psychologist, because poor sleep, anxiety and low mood can look similar.", "Coordinate with the other teachers so support is consistent."],
+    avoid: "Calling the student lazy, or telling them they have ADHD." },
+  lowMood: { title: "Low mood", tag: "This week",
+    signs: "Repeated low mood scores, less energy, less participation, flat expression.",
+    say: "I have noticed you seem tired lately. How are you really doing?",
+    do: ["Have a short private check-in and ask open questions.", "Break tasks into small steps and recognise effort.", "Refer to the counsellor if low mood lasts more than two weeks.", "Re-check the student's scores after one week."],
+    avoid: "Saying “cheer up”, comparing with others, or leaving it until it gets worse." },
+  decline: { title: "Sharp decline in wellbeing", tag: "This week",
+    signs: "The latest score dropped clearly compared with the earlier check-ins.",
+    say: "Something seems different from a few weeks ago. Has anything changed that I should know about?",
+    do: ["Look for what changed: a test, a conflict, an event at home, a friendship.", "Speak with the student privately within a few days.", "Tell the other teachers who need to know so support is consistent."],
+    avoid: "Assuming it is laziness or a phase." },
+  lonely: { title: "Isolation", tag: "This week",
+    signs: "Low connection scores, eating alone, avoiding group work.",
+    say: "I would like to help you feel more part of the class. What would make it easier?",
+    do: ["Plan a small, structured group task with kind classmates.", "Give the student a clear role in class activities.", "Suggest a club or activity linked to their interests."],
+    avoid: "Forcing the student to speak in front of the class." },
+  sleep: { title: "Poor sleep", tag: "Keep watching",
+    signs: "Poor sleep scores, tiredness in the morning, difficulty concentrating.",
+    say: "Sleep matters a lot for learning. What does your evening usually look like?",
+    do: ["Share simple routine tips: fixed bedtime, no phone for the last hour.", "Ask whether worry or noise at home is the cause.", "Check again after a week and refer if it continues."],
+    avoid: "Punishing lateness or sleeping in class without asking why." },
+  stress: { title: "High stress", tag: "Keep watching",
+    signs: "High stress scores, especially close to exams.",
+    say: "That is a lot to carry. Let us pick the one thing to focus on first.",
+    do: ["Help plan a realistic revision schedule with breaks.", "Teach a two-minute breathing exercise.", "Spread assessment deadlines where possible."],
+    avoid: "Adding extra pressure or comparing with top students." },
+  workload: { title: "Overloaded by schoolwork", tag: "Keep watching",
+    signs: "Workload scores near the top, missed deadlines.",
+    say: "Let us look at what is due and decide what is most important together.",
+    do: ["Coordinate with other teachers to avoid several deadlines in the same week.", "Offer a short extension for one task.", "Show the student how to split work into small steps."],
+    avoid: "Piling on extra homework as a consequence." },
+  wantsTalk: { title: "Asked to talk to someone", tag: "This week",
+    signs: "The student ticked that they would like to talk to someone.",
+    say: "I saw you wanted to talk. I am glad you reached out. When is a good time?",
+    do: ["Meet the student within two school days, privately.", "Listen first, then agree on a next step together.", "Refer to the counsellor if the issue is beyond your role."],
+    avoid: "Ignoring the request or making the student ask twice." }
+};
+/* fictional demo students: base scores are mood, sleep, stress, connection, workload */
+const DEMO = [
+  { n: "Amina B.", c: "1A", base: [4, 4, 2, 4, 2], flags: [] },
+  { n: "Youssef K.", c: "1A", base: [2, 2, 4, 3, 4], flags: ["lowMood", "sleep", "stress"], screens: [["phq9", 12]] },
+  { n: "Salma R.", c: "1B", base: [3, 3, 3, 3, 3], flags: [] },
+  { n: "Omar T.", c: "1B", base: [1, 2, 5, 1, 5], flags: ["unsafe", "lowMood"], screens: [["phq9", 19, true]] },
+  { n: "Lina A.", c: "2A", base: [3, 3, 4, 3, 4], flags: ["workload"], trend: 1.6 },
+  { n: "Hamza E.", c: "2A", base: [4, 3, 3, 4, 3], flags: [] },
+  { n: "Nour D.", c: "2A", base: [2, 3, 4, 2, 3], flags: ["bullying", "lonely"] },
+  { n: "Yasmine M.", c: "2B", base: [3, 4, 2, 4, 2], flags: [] },
+  { n: "Adam L.", c: "2B", base: [3, 2, 3, 3, 4], flags: ["health"], screens: [["asrs", 4]] },
+  { n: "Sara H.", c: "3A", base: [2, 2, 5, 2, 5], flags: ["stress", "sleep", "workload"], screens: [["gad7", 13]] },
+  { n: "Ilyas F.", c: "3A", base: [5, 4, 1, 5, 1], flags: [] },
+  { n: "Meryem Z.", c: "3B", base: [4, 3, 2, 4, 3], flags: [], none: true }
+];
+
+REQ_STATUS.info = ["More info needed", "warn"];
+
+/* ---------- state and storage ---------- */
+const TABS = ["checkin", "screeners", "medical", "calm", "support"];
+const DTABS = ["overview", "students", "requests", "setup"];
+const S = { mode: "home", tab: "checkin", dtab: "overview", ptab: "classes", flow: null, step: 0, ans: {}, concerns: {}, result: null, scr: null, scrAns: [], scrRes: null,
+  tool: "breathe", pat: "calm", ground: 0, worry: "", wind: {}, topic: null, faq: null, confirmClear: false, dlg: null, menu: false, confirmWipe: false,
+  msg: { to: "counsellor", howlong: "weeks", about: "low", want: "appt" },
+  rq: { type: "exam", to: "director", from: "", until: "", notes: "", cert: false, name: "", cls: "" }, rqOut: "", rqSaved: false,
+  open: null, fq: "", fcls: "", flev: "", demo: true, theme: "auto", demoReplies: {}, pf: { name: "", cls: "", share: false } };
+let D = { checkins: [], checkups: [], requests: [], profile: { name: "", cls: "", share: false, pushed: false } };
+try {
+  const raw = localStorage.getItem("stuwell-v1");
+  if (raw) { const p = JSON.parse(raw); D.checkins = Array.isArray(p.checkins) ? p.checkins : []; D.checkups = Array.isArray(p.checkups) ? p.checkups : []; D.requests = Array.isArray(p.requests) ? p.requests : [];
+    if (p.profile && typeof p.profile === "object") D.profile = Object.assign(D.profile, p.profile); }
+  const th = localStorage.getItem("stuwell-theme"); if (th) S.theme = th;
+  const dm = localStorage.getItem("stuwell-demo"); if (dm) S.demo = dm === "1";
+} catch (e) { /* storage unavailable: history lasts for this visit only */ }
+function save() { try { localStorage.setItem("stuwell-v1", JSON.stringify(D)); } catch (e) { /* ignore */ } }
+function toast(msg) {
+  const t = $("#toast"); t.textContent = msg; t.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, 2800);
+}
+const top0 = () => window.scrollTo({ top: 0, behavior: "auto" });
+const fmtDay = ts => new Date(ts).toLocaleDateString(undefined, { weekday: "short", day: "numeric" });
+const fmtDate = ts => new Date(ts).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+const fmtTime = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+
+/* ---------- check-in logic ---------- */
+function computeCheckin() {
+  const a = S.ans, c = S.concerns;
+  const idx = (a.mood + a.sleep + a.social + (6 - a.stress) + (6 - a.workload)) / 5;
+  const flags = [];
+  if (c.bullying) flags.push("bullying");
+  if (c.home) flags.push("home");
+  if (c.health) flags.push("health");
+  if (a.mood <= 2) flags.push("lowMood");
+  if (a.social <= 2) flags.push("lonely");
+  if (a.sleep <= 2) flags.push("sleep");
+  if (a.stress >= 4) flags.push("stress");
+  if (a.workload >= 4) flags.push("workload");
+  if (c.wantsTalk) flags.push("wantsTalk");
+  return { idx, fc: FORECASTS.find(f => idx >= f.min), flags,
+    tipKeys: TIP_ORDER.filter(k => flags.includes(k)).slice(0, 3), unsafe: !!c.unsafe, talk: !!c.wantsTalk || idx < 2.6 };
+}
+const toneOf = k => ({ clear: "", mostly: "", cloudy: "tone-warn", rain: "tone-attn", storm: "tone-crit" }[k]);
+
+/* ---------- views: check-in tab ---------- */
+function crisisCard(title) {
+  return `<div class="crisis" role="alert"><h3>${esc(title)}</h3>
+    <p>Thank you for being honest. Please do not stay alone with this. Tell someone near you now, or contact emergency services. If you might act on thoughts of hurting yourself, call your local emergency number or go to the nearest emergency department.</p>
+    <div class="row"><button class="btn" data-act="help" type="button">Get help now</button></div></div>`;
+}
+function heroView() {
+  return `<section class="hero">
+    <div class="stack" style="gap:26px">
+      <span class="badge">${ic("book", 20)} Made for students</span>
+      <h1>Take a minute to see how you are <em>really</em> doing.</h1>
+      <p class="lead">Study, deadlines, new people, missing home. StuWell helps you pause, notice what is going on, and find small, kind next steps.</p>
+      <div class="row">
+        <button class="btn primary" data-act="startCi" type="button">Start my check-in ${ic("arrow", 20)}</button>
+        <button class="btn ghost" data-act="justBreathe" type="button">${ic("wind", 22)} Just breathe</button>
+      </div>
+      <div class="privacy">${ic("lock", 22)}<span>Private by design. No account needed. Your answers stay on this device unless you choose to share them with your school.</span></div>
+    </div>
+    <div class="illo">${illoSvg()}</div>
+  </section>`;
+}
+function checkupsView() {
+  return `<section class="sec" style="padding-top:34px"><div class="stack" style="gap:10px"><h2>Screeners</h2>
+    <p class="sec-sub">Short questionnaires that doctors use to screen for low mood, anxiety and attention difficulties. They are not a diagnosis. They show whether it is worth talking to someone.</p></div>
+    <div class="cards">${Object.keys(SCR).map(k => { const s = SCR[k]; return `<button class="sage-card checkup" data-act="scr" data-v="${k}" type="button">
+      <span class="ic">${ic(s.icon, 26)}</span><h3>${esc(s.name)}</h3><p>${esc(s.about)}</p>
+      <span class="meta"><span>${esc(s.tool)}</span><span>${s.qs.length} questions</span><span>${esc(s.time)}</span></span>
+      <span class="go">Start ${ic("arrow", 18)}</span></button>`; }).join("")}</div></section>`;
+}
+function diaryHTML() {
+  const list = D.checkins.slice(-7).reverse();
+  let body;
+  if (!list.length) {
+    body = `<div class="empty">${wIcon("mostly", 44)}<b>Your forecasts will appear here</b><span>After your first check-in you will see how your week is going. It is stored only in this browser.</span></div>`;
+  } else {
+    body = `<div class="diary">${list.map(e => { const f = FORECASTS.find(x => e.idx >= x.min); return `<div class="dr"><span class="soft small">${fmtDay(e.ts)}</span><div class="bar" role="img" aria-label="Score ${e.idx.toFixed(1)} out of 5"><i style="width:${Math.round(e.idx / 5 * 100)}%"></i></div><span class="small"><b class="mono">${e.idx.toFixed(1)}</b> ${esc(f.name)}</span></div>`; }).join("")}</div>`;
+    if (D.checkups.length) body += `<div class="stack" style="gap:6px"><span class="label">Recent check-ups</span>${D.checkups.slice(-3).reverse().map(c => `<p class="small">${esc(SCR[c.kind].name)}, ${fmtDate(c.ts)}: ${esc(c.label)} (${c.score} out of ${c.max})</p>`).join("")}</div>`;
+    body += S.confirmClear
+      ? `<div class="row"><span class="small">Clear all history on this device?</span><button class="btn sm" data-act="clearYes" type="button">Yes, clear it</button><button class="btn sm ghost" data-act="clearNo" type="button">Keep it</button></div>`
+      : `<div><button class="btn sm ghost" data-act="clearAsk" type="button">Clear my history</button></div>`;
+  }
+  return body;
+}
+function diarySection() {
+  return `<section class="sec"><div class="stack" style="gap:10px"><h2>Your recent weather</h2><p class="sec-sub">A quick look at your last check-ins. Only you see this, unless you choose to share it with your school.</p></div><div id="diary" class="stack">${diaryHTML()}</div></section>`;
+}
+function ciStepView() {
+  const n = S.step, total = QUESTIONS.length + 1, pct = Math.round(n / total * 100);
+  if (n < QUESTIONS.length) {
+    const q = QUESTIONS[n], cur = S.ans[q.k];
+    return `<div class="flow"><div><button class="btn ghost sm" data-act="exitFlow" type="button">${ic("back", 18)} Back to start</button></div>
+      <div class="panel"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${n}"><i style="width:${pct}%"></i></div>
+      <p class="label">Question ${n + 1} of ${total}</p><h2>${esc(q.q)}</h2>
+      <div><div class="scale" role="group" aria-label="${esc(q.q)}">${[1, 2, 3, 4, 5].map(v => `<button type="button" data-act="ans" data-v="${v}" aria-pressed="${cur === v}" aria-label="${v} out of 5">${v}</button>`).join("")}</div>
+      <div class="anch" style="margin-top:12px"><span>1: ${esc(q.a[0])}</span><span>5: ${esc(q.a[1])}</span></div></div>
+      <div class="nav"><button class="btn" data-act="prev" type="button" ${n === 0 ? "disabled" : ""}>Back</button><button class="btn primary" data-act="next" type="button" ${cur ? "" : "disabled"}>Next</button></div></div></div>`;
+  }
+  return `<div class="flow"><div><button class="btn ghost sm" data-act="exitFlow" type="button">${ic("back", 18)} Back to start</button></div>
+    <div class="panel"><div class="progress"><i style="width:${pct}%"></i></div>
+    <p class="label">Question ${total} of ${total}</p><h2>Is anything else going on?</h2><p class="soft">Tick anything that applies. You can also skip this.</p>
+    <div class="checks">${CONCERNS.map(c => `<label><input type="checkbox" data-c="${c.k}" ${S.concerns[c.k] ? "checked" : ""}><span>${esc(c.t)}</span></label>`).join("")}</div>
+    <div class="nav"><button class="btn" data-act="prev" type="button">Back</button><button class="btn primary" data-act="finishCi" type="button">See my forecast</button></div></div></div>`;
+}
+function ciResultView() {
+  const r = S.result;
+  const tips = r.tipKeys.length
+    ? r.tipKeys.map(k => `<div class="tipgroup"><b>${esc(REASON[k] || k)}</b><ul>${TIPS[k].map(t => `<li>${esc(t)}</li>`).join("")}</ul></div>`).join("")
+    : `<div class="tipgroup"><b>Keep it going</b><ul><li>Notice what helped today and do it again tomorrow.</li><li>A two-minute breathing break is a good habit before a busy day.</li></ul></div>`;
+  return `<div class="flow">
+    ${r.unsafe ? crisisCard("You said you feel unsafe") : ""}
+    <div class="forecast ${toneOf(r.fc.k)}"><span class="wi">${wIcon(r.fc.k, 54)}</span>
+      <div class="stack" style="gap:8px"><span class="label" style="color:inherit">Your forecast</span><h2>${esc(r.fc.name)}</h2><p>${esc(r.fc.text)}</p>
+      <p class="idx mono">Weather score ${r.idx.toFixed(1)} out of 5</p></div></div>
+    ${r.flags.length ? `<div class="stack" style="gap:10px"><span class="label">What stood out</span><div class="chips">${r.flags.map(f => `<span class="chip">${esc(REASON[f])}</span>`).join("")}</div></div>` : ""}
+    <div class="panel"><h3>Small next steps</h3>${tips}
+      <div class="row"><button class="btn primary" data-act="toTool" data-v="breathe" type="button">${ic("wind", 20)} Try a breathing break</button><button class="btn" data-act="toTab" data-v="support" type="button">Get support</button>${r.flags.includes("health") ? `<button class="btn" data-act="toTab" data-v="medical" type="button">Prepare a medical request</button>` : ""}</div></div>
+    ${r.talk && !r.unsafe ? `<div class="note"><h3>Talking to someone would help</h3><p>${r.flags.includes("wantsTalk") ? "You said you would like to talk to someone. That is a good step." : "A short chat with a counsellor, a doctor or someone you trust can make a hard day lighter."} The Get support tab can write a first message for you.</p><div class="row"><button class="btn" data-act="toTab" data-v="support" type="button">Open Get support</button><button class="btn" data-act="help" type="button">Help now</button></div></div>` : ""}
+    <p class="fine">Your forecast is saved on this device so you can see how your week is going. It reaches your school only if you turned sharing on in your profile. It is a reflection tool and not a medical result.</p>
+    <div><button class="btn" data-act="exitFlow" type="button">Done</button></div></div>`;
+}
+function scrStepView() {
+  const k = S.scr, s = SCR[k], n = S.step, total = s.qs.length, cur = S.scrAns[n], pct = Math.round(n / total * 100);
+  return `<div class="flow"><div><button class="btn ghost sm" data-act="exitFlow" type="button">${ic("back", 18)} Back to start</button></div>
+    <div class="panel"><div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="${total}" aria-valuenow="${n}"><i style="width:${pct}%"></i></div>
+    <p class="label">${esc(s.name)} · ${esc(s.tool)} · ${n + 1} of ${total}</p>
+    <p class="soft small">${esc(s.intro)}</p><h2 style="font-size:clamp(1.3rem,4vw,1.7rem)">${esc(s.qs[n])}</h2>
+    <div class="optlist" role="group" aria-label="${esc(s.qs[n])}">${s.opts.map((o, i) => `<button class="opt" type="button" data-act="sans" data-v="${i}" aria-pressed="${cur === i}">${esc(o)}</button>`).join("")}</div>
+    <div class="nav"><button class="btn" data-act="prev" type="button" ${n === 0 ? "disabled" : ""}>Back</button><span class="fine">Your individual answers are never stored. Only the score is kept.</span></div></div></div>`;
+}
+function scrResultView() {
+  const r = S.scrRes, s = SCR[r.kind], topic = TOPICS.find(t => t.k === r.topic);
+  const steps = topic.help.slice(0, 4);
+  return `<div class="flow">
+    ${r.safety ? crisisCard("You mentioned thoughts of hurting yourself") : ""}
+    <div class="forecast tone-${r.tone}"><span class="wi">${ic(s.icon, 42)}</span>
+      <div class="stack" style="gap:8px"><span class="label" style="color:inherit">${esc(s.name)} · ${esc(s.tool)}</span><h2>${esc(r.title)}</h2><p>${esc(r.text)}</p>
+      <p class="idx mono">${esc(r.label)}: ${esc(r.scale)}</p></div></div>
+    ${r.stood.length ? `<div class="stack" style="gap:10px"><span class="label">What stood out</span><div class="chips">${r.stood.map(x => `<span class="chip">${esc(x)}</span>`).join("")}</div></div>` : ""}
+    <div class="panel"><h3>What can help</h3><ol class="steps">${steps.map(t => `<li>${esc(t)}</li>`).join("")}</ol></div>
+    ${r.tone === "attn" || r.tone === "crit" ? `<div class="note"><h3>Talking to someone would help</h3><p>Take this result to a counsellor or a doctor. The Get support tab can write a first message for you.</p><div class="row"><button class="btn" data-act="toTab" data-v="support" type="button">Open Get support</button><button class="btn" data-act="help" type="button">Help now</button></div></div>` : ""}
+    <p class="fine">This result describes your answers to a screening questionnaire${r.kind === "asrs" ? ". The ASRS was designed for adults, so for younger students it only shows whether it is worth asking a professional" : ""}. It is not a medical diagnosis.</p>
+    <div class="row"><button class="btn" data-act="exitFlow" type="button">Back to start</button><button class="btn" data-act="readTopic" data-v="${r.topic}" type="button">Read about ${esc(topic.title.toLowerCase())}</button></div></div>`;
+}
+function checkinView() {
+  if (S.flow === "ci") return ciStepView();
+  if (S.flow === "cires") return ciResultView();
+  return heroView() + deeperStrip() + sharingStrip() + diarySection();
+}
+function deeperStrip() {
+  return `<section class="sec"><div class="reach" style="background:var(--sage)"><div class="stack" style="gap:8px"><h3 style="color:var(--ink)">Want to go a little deeper?</h3><p style="color:var(--ink-soft)">The Screeners tab has short questionnaires for low mood, anxiety and attention.</p></div><button class="btn primary" data-act="toTab" data-v="screeners" type="button">Open screeners</button></div></section>`;
+}
+
+/* ---------- views: screeners tab ---------- */
+function screenersView() {
+  if (S.flow === "scr") return scrStepView();
+  if (S.flow === "scrres") return scrResultView();
+  return checkupsView() + resultsSection();
+}
+function resultsSection() {
+  const list = D.checkups.slice(-5).reverse();
+  const body = list.length
+    ? `<div class="stack" style="gap:10px">${list.map(c => `<div class="req"><div class="row" style="justify-content:space-between"><b>${esc(SCR[c.kind].name)} <span class="soft small">${esc(SCR[c.kind].tool)}</span></b><span class="soft small">${fmtDate(c.ts)}</span></div><span class="small">${esc(c.label)}: ${c.score} out of ${c.max}</span></div>`).join("")}</div>`
+    : `<div class="empty">${ic("mood", 40)}<b>No results yet</b><span>Pick a screener above. Each takes one or two minutes.</span></div>`;
+  return `<section class="sec"><div class="stack" style="gap:10px"><h2>Your recent results</h2><p class="sec-sub">Only the score is saved, on this device. Your individual answers are never stored. Scores are shared with your school only if you turned sharing on.</p></div>${body}</section>`;
+}
+
+/* ---------- views: medical request tab ---------- */
+const dstr = v => v ? new Date(v + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : "";
+function buildRq() {
+  const q = S.rq, name = q.name.trim(), cls = q.cls.trim();
+  const greet = { director: "Dear Director,", admin: "Dear Sir or Madam,", teacher: "Dear teacher," }[q.to];
+  let when = "";
+  if (q.from && q.until) when = ` Dates: from ${dstr(q.from)} to ${dstr(q.until)}.`;
+  else if (q.from) when = ` Starting on ${dstr(q.from)}.`;
+  else if (q.until) when = ` Until ${dstr(q.until)}.`;
+  return `Subject: ${REQ_SUBJ[q.type]}\n\n${greet}\n\nMy name is ${name || "[your name]"}${cls ? ", from " + cls : ""}. I am writing to ask for ${REQ_TYPES[q.type].toLowerCase()}.${when}\n\n${q.notes.trim()}\n\n${q.cert ? "I have a medical certificate and will bring the original to the administration." : "I can provide a medical certificate if you need one."}\n\nThank you for your help.\n${name || "[Your name]"}`;
+}
+function rqOutHTML() {
+  if (!S.rqOut) return "";
+  return `<div class="stack" style="gap:14px"><span class="label">Your request, ready to send</span><div class="msgbox" id="rq-text">${esc(S.rqOut)}</div>
+    <div class="row"><button class="btn primary" data-act="rqSend" type="button">${ic("send", 20)} Send to my director</button><button class="btn" data-act="rqCopy" type="button">${ic("copy", 20)} Copy request</button><button class="btn ghost" data-act="rqSave" type="button" ${S.rqSaved ? "disabled" : ""}>${S.rqSaved ? "Saved" : "Save for later"}</button></div>
+    <p class="fine">Sending shares this request, your name and your class with school staff who have access, and nothing else. You can also copy it and hand it in yourself with your medical certificate.</p></div>`;
+}
+function rqStatus(r) {
+  const rp = REPL["r_" + r.id];
+  if (rp && REQ_STATUS[rp.status]) return [rp.status, rp];
+  return [r.sent ? "sent" : (r.status || "prepared"), null];
+}
+function rqListHTML() {
+  const list = D.requests.slice().sort((a, b) => b.ts - a.ts);
+  if (!list.length) return `<div class="empty">${ic("steth", 40)}<b>No requests yet</b><span>Prepare a request and send or save it here to keep track of what happens next.</span></div>`;
+  return list.map(r => { const [sk, rp] = rqStatus(r), st = REQ_STATUS[sk] || REQ_STATUS.prepared;
+    const dates = r.from ? ` · ${fmtDate(new Date(r.from + "T00:00").getTime())}${r.until ? " to " + fmtDate(new Date(r.until + "T00:00").getTime()) : ""}` : "";
+    return `<div class="req"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${esc(REQ_TYPES[r.type] || "Request")}</b><span class="soft small" style="display:block">${r.sent ? "Sent" : "Prepared"} ${fmtDate(r.ts)}${esc(dates)}</span></div><span class="pill tone-${st[1]}">${st[0]}</span></div>
+      <p class="small soft">${esc(r.notes)}</p>
+      ${rp && rp.reply ? `<div class="note" style="padding:14px 16px"><b class="small">Reply from school</b><p class="small">${esc(rp.reply)}</p></div>` : ""}
+      <div class="row">${r.sent ? "" : `<label class="small" for="rqs-${r.id}">Status</label><select class="field inl" id="rqs-${r.id}" data-rqs="${r.id}">${["prepared", "sent"].map(k => `<option value="${k}" ${k === r.status ? "selected" : ""}>${REQ_STATUS[k][0]}</option>`).join("")}</select>`}<button class="btn sm ghost" data-act="rqRemove" data-v="${r.id}" type="button">Remove</button></div></div>`; }).join("");
+}
+function medicalView() {
+  const q = S.rq;
+  return `<section class="sec" style="padding-top:34px"><div class="stack" style="gap:10px"><h2>Medical request</h2>
+    <p class="sec-sub">Ask your school for an exam change, a medical absence or mobility support. StuWell writes the request for you. You can copy it, or send it straight to your director and see the reply here. Nothing is sent until you press send.</p></div>
+    <div class="mr"><div class="panel"><h3>New request</h3>
+      <div class="fields">${sel("rq-type", "Type of request", REQ_TYPES, q.type)}${sel("rq-to", "Send it to", REQ_TO, q.to)}
+        <div class="fld"><label for="rq-from">From (optional)</label><input class="field" id="rq-from" type="date" value="${esc(q.from)}"></div>
+        <div class="fld"><label for="rq-until">Until (optional)</label><input class="field" id="rq-until" type="date" value="${esc(q.until)}"></div>
+        <div class="fld"><label for="rq-name">Your name (optional)</label><input class="field" id="rq-name" type="text" autocomplete="name" value="${esc(q.name)}"></div>
+        <div class="fld"><label for="rq-cls">Class or program (optional)</label><input class="field" id="rq-cls" type="text" value="${esc(q.cls)}"></div></div>
+      <div class="fld"><label for="rq-notes">What do you need?</label><textarea class="field" id="rq-notes" placeholder="Example: My doctor advised a week of rest. I need the physics test moved by one week.">${esc(q.notes)}</textarea></div>
+      <div class="checks"><label><input type="checkbox" id="rq-cert" ${q.cert ? "checked" : ""}><span>I have a medical certificate and will bring the original to the administration</span></label></div>
+      <div><button class="btn primary" data-act="rqPrepare" type="button">Prepare my request</button></div>
+      <div id="rq-out">${rqOutHTML()}</div></div>
+    <div class="stack" style="gap:14px"><h3>Your requests</h3><div class="stack" id="rq-list" style="gap:12px">${rqListHTML()}</div>
+      <p class="fine">Requests you send show the school\u2019s reply here. For requests you only copy, update the status yourself.</p></div></div></section>`;
+}
+function refreshRq() {
+  if (!S.rqOut) return;
+  S.rqOut = buildRq(); S.rqSaved = false;
+  const o = $("#rq-out"); if (o) o.innerHTML = rqOutHTML();
+}
+
+/* ---------- views: calm tools tab ---------- */
+function calmView() {
+  return `<section class="sec" style="padding-top:34px"><div class="stack" style="gap:10px"><h2>Calm tools</h2><p class="sec-sub">Pick one. Each takes a few minutes and works well on a phone.</p></div><div id="calm-body" class="stack" style="gap:20px">${calmBody()}</div></section>`;
+}
+function calmBody() {
+  return `<div class="toolpick">${TOOLS.map(t => `<button class="tp" type="button" data-act="tool" data-v="${t.k}" aria-pressed="${S.tool === t.k}">${ic(t.i, 26)}<b>${esc(t.t)}</b><span class="d">${esc(t.d)}</span></button>`).join("")}</div>${toolView()}`;
+}
+function toolView() {
+  if (S.tool === "breathe") {
+    return `<div class="tool"><div class="seg" role="group" aria-label="Breathing pattern">${Object.keys(PATTERNS).map(k => `<button type="button" data-act="pat" data-v="${k}" aria-pressed="${S.pat === k}">${esc(PATTERNS[k].name)}</button>`).join("")}</div>
+      <p class="soft">${esc(PATTERNS[S.pat].note)}</p>
+      <div class="orb-wrap"><div class="orb-ring"></div><div class="orb" id="orb" role="status">Ready</div></div>
+      <p class="soft small" id="bcount">Cycles: 0</p>
+      <button class="btn primary" id="bbtn" data-act="bstart" type="button">Start</button></div>`;
+  }
+  if (S.tool === "ground") {
+    const g = S.ground;
+    if (g >= GROUND.length) return `<div class="tool"><span class="gnum">${ic("check", 56)}</span><h3>Well done.</h3><p class="soft">Notice how your body feels now. If your thoughts are still racing, do another round or try a breathing pattern.</p><div class="row" style="justify-content:center"><button class="btn" data-act="gagain" type="button">Do it again</button><button class="btn primary" data-act="toTool" data-v="breathe" type="button">Try breathing</button></div></div>`;
+    const [n, what, hint] = GROUND[g];
+    return `<div class="tool"><span class="label">Step ${g + 1} of ${GROUND.length}</span><span class="gnum" aria-hidden="true">${n}</span><p class="gstep">${esc(what)}</p><p class="soft">${esc(hint)}</p>
+      <div class="row" style="justify-content:center"><button class="btn" data-act="gprev" type="button" ${g === 0 ? "disabled" : ""}>Back</button><button class="btn primary" data-act="gnext" type="button">${g === GROUND.length - 1 ? "Finish" : "Next"}</button></div></div>`;
+  }
+  if (S.tool === "dump") {
+    return `<div class="tool"><p class="soft">Write down what is on your mind. Nothing is saved or sent. When you are ready, let it go.</p>
+      <div class="wd" id="wdbox" style="width:100%"><textarea class="field" id="worry" aria-label="What is worrying you" placeholder="What is on your mind right now?">${esc(S.worry)}</textarea></div>
+      <div class="row" style="justify-content:center"><button class="btn primary" data-act="letgo" type="button">Let it go</button></div>
+      <p class="fine">Tip: after you let it go, pick one thing from it that you can do today, even a small one.</p></div>`;
+  }
+  if (S.tool === "focus") {
+    return `<div class="tool"><div class="seg" role="group" aria-label="Timer mode"><button type="button" data-act="fmode" data-v="focus" aria-pressed="${F.mode === "focus"}">Focus 25</button><button type="button" data-act="fmode" data-v="break" aria-pressed="${F.mode === "break"}">Break 5</button></div>
+      <div class="timer" id="ftime">${fmtTime(F.left)}</div>
+      <div class="row" style="justify-content:center"><button class="btn primary" id="fbtn" data-act="fstart" type="button">${F.run ? "Pause" : "Start"}</button><button class="btn" data-act="freset" type="button">Reset</button></div>
+      <p class="soft small" id="fdone">Focus blocks finished this visit: ${F.done}</p>
+      <p class="fine">Work on one task only and keep your phone out of reach. Short blocks help most when attention is hard.</p></div>`;
+  }
+  const done = WIND.filter((_, i) => S.wind[i]).length;
+  return `<div class="tool"><p class="soft">Tick what you can do tonight. Small changes add up over a week.</p>
+    <div class="checks ckl">${WIND.map((w, i) => `<label><input type="checkbox" data-w="${i}" ${S.wind[i] ? "checked" : ""}><span>${esc(w)}</span></label>`).join("")}</div>
+    <p class="soft" id="wcount" role="status">${done} of ${WIND.length} done${done === WIND.length ? ". Sleep well." : ""}</p></div>`;
+}
+
+/* ---------- tool runtime: breathing and focus timer ---------- */
+const R = { running: false, cycles: 0, bt: null };
+const F = { mode: "focus", left: 1500, run: false, end: 0, iv: null, done: 0 };
+function stopBreath() {
+  clearTimeout(R.bt); R.running = false;
+  const o = $("#orb"), b = $("#bbtn");
+  if (o) { o.style.transition = "transform .6s ease-in-out"; o.style.transform = "scale(.6)"; o.textContent = "Ready"; }
+  if (b) b.textContent = "Start";
+}
+function startBreath() {
+  if (R.running) { stopBreath(); return; }
+  R.running = true; R.cycles = 0;
+  const ph = PATTERNS[S.pat].ph; let i = 0;
+  $("#bbtn").textContent = "Stop"; $("#bcount").textContent = "Cycles: 0";
+  const step = () => {
+    const o = $("#orb");
+    if (!R.running || !o) { R.running = false; return; }
+    const [label, secs, sc] = ph[i];
+    o.textContent = label;
+    o.style.transition = `transform ${secs}s ease-in-out`;
+    o.style.transform = `scale(${sc === 1 ? 1.3 : .6})`;
+    R.bt = setTimeout(() => {
+      i++;
+      if (i >= ph.length) { i = 0; R.cycles++; const c = $("#bcount"); if (c) c.textContent = "Cycles: " + R.cycles; }
+      step();
+    }, secs * 1000);
+  };
+  requestAnimationFrame(step);
+}
+function fTotal() { return F.mode === "focus" ? 1500 : 300; }
+function fPaint() {
+  const t = $("#ftime"), b = $("#fbtn"), d = $("#fdone");
+  if (t) t.textContent = fmtTime(F.left);
+  if (b) b.textContent = F.run ? "Pause" : "Start";
+  if (d) d.textContent = "Focus blocks finished this visit: " + F.done;
+}
+function fTick() {
+  if (!F.run) return;
+  F.left = Math.max(0, Math.round((F.end - Date.now()) / 1000));
+  if (F.left <= 0) {
+    F.run = false; clearInterval(F.iv);
+    if (F.mode === "focus") F.done++;
+    toast(F.mode === "focus" ? "Focus block done. Take 5 minutes." : "Break over. Ready when you are.");
+    F.mode = F.mode === "focus" ? "break" : "focus"; F.left = fTotal();
+  }
+  fPaint();
+}
+function fToggle() {
+  if (F.run) { F.run = false; clearInterval(F.iv); }
+  else { F.run = true; F.end = Date.now() + F.left * 1000; clearInterval(F.iv); F.iv = setInterval(fTick, 500); }
+  fPaint();
+}
+function cleanupTools() { stopBreath(); }
+
+/* ---------- views: support tab ---------- */
+function topicsHTML() {
+  return TOPICS.map(t => { const open = S.topic === t.k;
+    return `<div class="topic" id="topic-${t.k}"><button class="topic-h" data-act="topic" data-v="${t.k}" aria-expanded="${open}" type="button"><span><b>${esc(t.title)}</b><span class="soft small" style="display:block">${esc(t.tag)}</span></span><span class="chev" style="transform:rotate(${open ? 180 : 0}deg)">${ic("chev", 22)}</span></button>
+    ${open ? `<div class="topic-b"><p>${esc(t.what)}</p><span class="label">Common signs</span><ul>${t.signs.map(x => `<li>${esc(x)}</li>`).join("")}</ul><span class="label">What can help</span><ul>${t.help.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="seek"><b>When to get help.</b> ${esc(t.seek)}</div>
+      ${t.screener ? `<div><button class="btn sm primary" data-act="scr" data-v="${t.screener}" type="button">Take the ${esc(SCR[t.screener].name.toLowerCase())} (${esc(SCR[t.screener].tool)})</button></div>` : ""}</div>` : ""}</div>`; }).join("");
+}
+function faqHTML() {
+  return FAQ.map((f, i) => { const open = S.faq === i;
+    return `<div class="faq-i"><button class="faq-q" data-act="faq" data-v="${i}" aria-expanded="${open}" type="button"><span>${esc(f[0])}</span><span class="chev" style="transform:rotate(${open ? 180 : 0}deg)">${ic("chev", 22)}</span></button>${open ? `<p class="faq-a">${esc(f[1])}</p>` : ""}</div>`; }).join("");
+}
+function buildMsg() {
+  const m = S.msg, topic = FOR[m.about], how = HOWLONG[m.howlong];
+  let want = WANT[m.want];
+  if (["friend", "family", "tutor"].includes(m.to) && m.want === "appt") want = WANT.find;
+  if (m.to === "counsellor" || m.to === "doctor") return `Hello,\n\nI am a student and I have been struggling with ${topic} for ${how}. ${want}\n\nWhen could we find a time to talk?\n\nThank you.`;
+  return `Hi,\n\nCan we talk sometime soon? I have been struggling with ${topic} for ${how}, and I did not want to keep it to myself. ${want}\n\nThank you for listening.`;
+}
+function optLabel(s) { s = s.replace(/\.$/, ""); return s.charAt(0).toUpperCase() + s.slice(1); }
+function sel(id, label, obj, cur) {
+  return `<div class="fld"><label for="${id}">${label}</label><select class="field" id="${id}">${Object.keys(obj).map(k => `<option value="${k}" ${k === cur ? "selected" : ""}>${esc(optLabel(obj[k]))}</option>`).join("")}</select></div>`;
+}
+function supportView() {
+  return `<section class="sec" style="padding-top:34px"><div class="stack" style="gap:10px"><h2>Not an emergency, but not okay?</h2><p class="sec-sub">That counts too. These are good places to start.</p></div>
+    <div class="cards">${NOT_OK.map(n => `<div class="sage-card"><span class="ic">${ic(n.i, 26)}</span><h3>${esc(n.t)}</h3><p>${esc(n.d)}</p></div>`).join("")}</div></section>
+
+    <section class="sec"><div class="stack" style="gap:10px"><h2>Reach out in one minute</h2><p class="sec-sub">Not sure what to say? Choose a few options and StuWell writes a first message you can send.</p></div>
+      <div class="panel"><div class="fields">${sel("m-to", "Who is it for?", TO, S.msg.to)}${sel("m-about", "What has been hard?", FOR, S.msg.about)}${sel("m-how", "For how long?", HOWLONG, S.msg.howlong)}${sel("m-want", "What would help?", WANT, S.msg.want)}</div>
+      <div class="msgbox" id="msgout" aria-live="polite">${esc(buildMsg())}</div>
+      <div class="row"><button class="btn primary" data-act="copy" type="button">${ic("copy", 20)} Copy message</button><span class="fine">Edit it before you send. Nothing is stored.</span></div></div></section>
+
+    <section class="sec"><div class="stack" style="gap:10px"><h2>Understand what you feel</h2><p class="sec-sub">General information to help you recognize what is happening. It does not replace a doctor or a psychologist.</p></div><div class="topics" id="topics">${topicsHTML()}</div></section>
+
+    <section class="sec"><div class="stack" style="gap:10px"><h2>Common questions</h2><p class="sec-sub">Reaching out can feel like a big step. Here is what students often ask.</p></div>
+      <div><a class="btn" href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">Find a helpline near you ${ic("ext", 18)}</a></div>
+      <div class="faq" id="faq">${faqHTML()}</div></section>
+
+    <section class="sec"><div class="reach"><div class="stack" style="gap:8px"><h3>Need help right now?</h3><p>If you are in danger or think you might hurt yourself, get help now. You can also reach out to someone you trust today.</p></div><button class="btn primary" data-act="help" type="button">Get help now</button></div></section>`;
+}
+
+/* ---------- help dialog ---------- */
+function helpDialog() {
+  const num = (n, d, hint) => `<div class="numrow"><div><b>${esc(n)}</b>${hint ? `<span class="soft small" style="display:block">${esc(hint)}</span>` : ""}</div><a class="n" href="tel:${d}" aria-label="${esc(n)}, ${d}">${esc(d)}</a></div>`;
+  return `<div class="backdrop" data-act="bd"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t" tabindex="-1" id="dlg">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 id="dlg-t" style="font-size:1.7rem">You are not alone</h2><button class="btn ghost sm" data-act="closeHelp" type="button" aria-label="Close">${ic("close", 22)}</button></div>
+    <p>If you are in danger, or you think you might hurt yourself, contact emergency services now or go to the nearest hospital emergency department. If you can, stay with someone.</p>
+    <div class="stack" style="gap:10px"><span class="label">Morocco: emergency</span>${MA_EMERGENCY.map(r => num(r[0], r[1])).join("")}
+      <p class="fine">Some sources list different codes for some services. If a number does not connect, try another or go to a hospital.</p></div>
+    <div class="stack" style="gap:10px"><span class="label">Morocco: support lines</span>${MA_LINES.map(r => num(r[0], r[1], r[3])).join("")}
+      <p class="fine">Hours can change. These lines have specific audiences and are not general crisis lines.</p></div>
+    <div class="stack" style="gap:10px"><span class="label">Somewhere else</span><p>Call your local emergency number. You can also look up free helplines for your country.</p>
+      <div><a class="btn" href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">Find a helpline near you ${ic("ext", 18)}</a></div></div>
+    <div class="note"><h3>Then tell someone today</h3><p>A friend, a family member, a tutor or a counsellor. You do not need the perfect words. “I’ve been struggling lately” is enough.</p></div>
+    <button class="btn primary" data-act="closeHelp" type="button">Close</button></div></div>`;
+}
+/* =====================================================================
+   Live data (db) with a local fallback, director data and evaluation
+   ===================================================================== */
+let REPL = {};
+const LIVE = { db: null, user: null, uid: null, edit: null, write: null, ready: false, err: "" };
+const DIR = { students: [], replies: {} };
+let pushQ = Promise.resolve();
+const canShare = () => !!(LIVE.db && LIVE.uid && LIVE.write !== false);
+
+async function initLive() {
+  try {
+    if (!(window.claude && typeof window.claude.use === "function")) { LIVE.ready = true; if (S.mode === "director" || S.mode === "professor") render(); return; }
+    LIVE.user = await window.claude.use("user");
+    LIVE.db = await window.claude.use("db");
+    if (LIVE.user) {
+      try { LIVE.uid = await LIVE.user.id(); } catch (e) { /* no id */ }
+      try { LIVE.edit = await LIVE.user.canEdit(); } catch (e) { LIVE.edit = false; }
+      try { LIVE.write = await LIVE.user.can("data.write"); } catch (e) { /* unknown */ }
+    }
+    if (LIVE.db && LIVE.uid) {
+      try {
+        LIVE.db.doc("replies/" + LIVE.uid).onSnapshot(s => {
+          REPL = s.exists ? (s.data() || {}) : {};
+          if (S.mode === "student" && S.tab === "medical") refreshMedList();
+        }, () => { /* replies unavailable */ });
+      } catch (e) { /* ignore */ }
+    }
+    if (LIVE.db && LIVE.edit) {
+      try {
+        LIVE.db.collection("shared").onSnapshot(s => { DIR.students = s.docs.map(d => Object.assign({ id: d.id }, d.data() || {})); dirRefresh(); }, e => { LIVE.err = (e && e.message) || "Could not read student data."; dirRefresh(); });
+        LIVE.db.collection("replies").onSnapshot(s => { const m = {}; s.docs.forEach(d => { m[d.id] = d.data() || {}; }); DIR.replies = m; dirRefresh(); }, () => { /* ignore */ });
+      } catch (e) { LIVE.err = String((e && e.message) || e); }
+    }
+  } catch (e) { LIVE.err = String((e && e.message) || e); }
+  LIVE.ready = true;
+  if (S.mode === "director" || S.mode === "professor") render(); else renderHeader();
+}
+function sharedPayload() {
+  const pf = D.profile, share = !!pf.share;
+  return {
+    name: (pf.name || "").trim().slice(0, 60), cls: (pf.cls || "").trim().slice(0, 30), share, updated: Date.now(),
+    checkins: share ? D.checkins.slice(-12).map(c => ({ ts: c.ts, idx: c.idx, flags: c.flags || [], unsafe: !!c.unsafe })) : [],
+    checkups: share ? D.checkups.slice(-8).map(c => ({ ts: c.ts, kind: c.kind, score: c.score, max: c.max, safety: !!c.safety })) : [],
+    requests: D.requests.filter(r => r.sent).map(r => ({ id: r.id, ts: r.ts, type: r.type, to: r.to || "director", notes: r.notes, from: r.from || "", until: r.until || "", cert: !!r.cert }))
+  };
+}
+function pushShared() {
+  if (!canShare()) return Promise.resolve(false);
+  const pf = D.profile;
+  if (!pf.share && !pf.pushed && !D.requests.some(r => r.sent)) return Promise.resolve(true);
+  const body = sharedPayload();
+  pushQ = pushQ.then(async () => {
+    try { await LIVE.db.doc("shared/" + LIVE.uid).set(body); if (!pf.pushed) { pf.pushed = true; save(); } return true; }
+    catch (e) { LIVE.err = String((e && e.message) || e); return false; }
+  });
+  return pushQ;
+}
+
+/* ---------- fictional sample students (never written to the database) ---------- */
+function genDemo() {
+  const now = Date.now(), clamp = v => Math.max(1, Math.min(5, v));
+  const reqs = {
+    "Adam L.": [{ id: "dq1", type: "exam", to: "director", cert: true, ts: now - DAY, from: "", until: "", notes: "My doctor advised ten days of rest after a sprained ankle. Could the two tests next week be moved?" }],
+    "Sara H.": [{ id: "dq2", type: "absence", to: "director", cert: false, ts: now - 2 * DAY, from: "", until: "", notes: "I have a stomach infection and was told to stay home for three days. I can bring a certificate on Monday." }],
+    "Youssef K.": [{ id: "dq3", type: "mobility", to: "director", cert: true, ts: now - 6 * DAY, from: "", until: "", notes: "I am on crutches for two weeks. Could my classes be on the ground floor?" }]
+  };
+  return DEMO.map((d, k) => {
+    const days = d.none ? [26, 24, 22] : [9, 7, 5, 3, 1, 0];
+    const checkins = days.map((ago, i) => {
+      const last = i === days.length - 1;
+      let [mood, sleep, stress, social, work] = d.base.slice();
+      if (d.trend && !last) { mood++; sleep++; stress--; social++; work--; }
+      mood = clamp(mood); sleep = clamp(sleep); stress = clamp(stress); social = clamp(social); work = clamp(work);
+      let idx = (mood + sleep + social + (6 - stress) + (6 - work)) / 5;
+      if (!last && !d.trend) idx = clamp(idx + ((k + i) % 3 - 1) * 0.2);
+      return { ts: now - ago * DAY - (last ? 2 * 3600000 : 0), idx: Math.round(idx * 10) / 10, flags: last ? d.flags.slice() : [], unsafe: last && d.flags.includes("unsafe") };
+    });
+    const checkups = (d.screens || []).map(s => ({ ts: now - 3 * DAY, kind: s[0], score: s[1], max: { phq9: 27, gad7: 21, asrs: 6 }[s[0]], safety: !!s[2] }));
+    return { id: "demo" + k, demo: true, name: d.n, cls: d.c, share: true, checkins, checkups, requests: reqs[d.n] || [], updated: now };
+  });
+}
+const DEMO_STUDENTS = genDemo();
+S.demoReplies.demo1 = { r_dq3: { status: "approved", reply: "Approved. Your classes will move to the ground floor from Monday. Please bring the original certificate to the administration.", ts: Date.now() - 5 * DAY } };
+
+function dirStudents() {
+  const live = DIR.students.filter(s => s && (s.name || (s.checkins && s.checkins.length) || (s.requests && s.requests.length))).map(s => Object.assign({ checkins: [], checkups: [], requests: [] }, s));
+  return live.concat(S.demo ? DEMO_STUDENTS : []);
+}
+function replyFor(st, r) { const m = st.demo ? S.demoReplies[st.id] : DIR.replies[st.id]; return m ? m["r_" + r.id] || null : null; }
+function dirRequests() {
+  const out = [];
+  dirStudents().forEach(st => (st.requests || []).forEach(r => out.push({ st, r, rp: replyFor(st, r) })));
+  return out.sort((a, b) => (a.rp ? 1 : 0) - (b.rp ? 1 : 0) || b.r.ts - a.r.ts);
+}
+function evalStudent(st) {
+  const cks = (st.checkins || []).slice().sort((a, b) => a.ts - b.ts);
+  const last = cks[cks.length - 1], now = Date.now();
+  const fresh = !!last && now - last.ts < 14 * DAY;
+  const fl = [];
+  if (fresh) { (last.flags || []).forEach(f => fl.push(f)); if (last.unsafe) fl.push("unsafe"); }
+  (st.checkups || []).filter(c => now - c.ts < 30 * DAY).forEach(c => {
+    if (c.kind === "phq9") { if (c.safety) fl.push("screenSafety"); if (c.score >= 10) fl.push("screenPHQ"); }
+    if (c.kind === "gad7" && c.score >= 10) fl.push("screenGAD");
+    if (c.kind === "asrs" && c.score >= 4) fl.push("screenADHD");
+  });
+  if (fresh && cks.length >= 3) { const prev = cks.slice(-4, -1), avg = prev.reduce((s, c) => s + c.idx, 0) / prev.length; if (avg - last.idx >= 0.9) fl.push("decline"); }
+  const flags = REASON_ORDER.filter(k => fl.includes(k));
+  let level = "none";
+  if (flags.includes("unsafe") || flags.includes("screenSafety")) level = "urgent";
+  else if (["bullying", "home", "wantsTalk", "decline", "screenPHQ", "screenGAD"].some(k => flags.includes(k)) || (fresh && last.idx < 2.2)) level = "attention";
+  else if (flags.length || (fresh && last.idx < 3.2)) level = "watch";
+  else if (fresh) level = "stable";
+  return { level, flags, last, idx: last ? last.idx : null, cks };
+}
+const levelPill = lv => `<span class="pill tone-${LEVEL_TONE[lv]}">${LEVEL_LABEL[lv]}</span>`;
+function spark(cks) {
+  const pts = cks.slice(-8); if (pts.length < 2) return "";
+  const w = 120, h = 34, xs = i => 3 + i * (w - 6) / (pts.length - 1), ys = v => h - 3 - (Math.max(1, Math.min(5, v)) - 1) / 4 * (h - 6);
+  const d = pts.map((c, i) => (i ? "L" : "M") + xs(i).toFixed(1) + " " + ys(c.idx).toFixed(1)).join(" ");
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" role="img" aria-label="Trend of the last ${pts.length} check-ins"><path d="${d}" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${xs(pts.length - 1).toFixed(1)}" cy="${ys(pts[pts.length - 1].idx).toFixed(1)}" r="3.4" fill="currentColor"/></svg>`;
+}
+
+/* =====================================================================
+   Landing page
+   ===================================================================== */
+function landingView() {
+  const door = (cls, act, icon, title, text, cta) => `<button class="door ${cls}" data-act="${act}" type="button"><span class="dic">${ic(icon, 26)}</span><span class="dk">${title}</span><p>${text}</p><span class="go">${cta} ${ic("arrow", 20)}</span></button>`;
+  const doors = door("stu", "goStudent", "user", "I am a student", "Check in, screeners, calm tools and support.", "Enter") +
+    door("prof", "goProfessor", "book", "I am a professor", "See how your classes are doing and how to help.", "Enter") +
+    door("dir", "goDirector", "shield", "I am a director", "See who needs support, and what to say and do.", "Enter");
+  const f0 = FORECASTS[2];
+  return `
+  <div class="lhero"><div class="blobs" aria-hidden="true"><i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i></div>
+    <div class="wrap lhero-in">
+      <div class="stack" style="gap:26px">
+        <span class="badge">${ic("cap", 20)} Student well-being, made simple</span>
+        <h1>Your well-being, <em>our priority.</em></h1>
+        <p class="lead">StuWell helps students notice how they really feel, calm down in two minutes, and reach the right person. It gives directors a clear, respectful view of who needs support.</p>
+        <div class="doors">${doors}</div>
+        <div class="trust"><span>${ic("shield", 20)}Private by default</span><span>${ic("check", 20)}Standard questionnaires: PHQ-9, GAD-7, ASRS</span><span>${ic("lockc", 20)}No account needed</span></div>
+      </div>
+      <div class="mock" aria-label="Illustration">
+        <div class="illo">${illoSvg()}</div>
+        <div class="fl fl1">${ic("check", 22)}<span><b>Check-in saved</b><span class="soft">Only on your device</span></span></div>
+        <div class="fl fl2">${ic("chat", 22)}<span><b>Reply from school</b><span class="soft">Request approved</span></span></div>
+      </div>
+    </div></div>
+
+  <div class="wrap"><div class="lstats rv">
+    <div class="lstat"><b>2 min</b><span class="soft">for a full check-in</span></div>
+    <div class="lstat"><b>3</b><span class="soft">screeners: PHQ-9, GAD-7, ASRS</span></div>
+    <div class="lstat"><b>5</b><span class="soft">calm tools that work on a phone</span></div>
+    <div class="lstat"><b>0</b><span class="soft">accounts or passwords</span></div></div></div>
+
+  <section class="wrap lsec" id="try"><div class="twocol" style="align-items:center;gap:36px">
+    <div class="lh rv" style="margin:0"><span class="kicker">Try it</span><h2>See how a forecast feels.</h2><p class="soft">Move the slider. This is how StuWell turns your answers into a gentle, weather-style forecast, with no judgement and nothing saved.</p></div>
+    <div class="phone rv"><span class="label">Quick preview</span><p class="phone-q">How is your energy today?</p>
+      <input class="range" id="demo-r" type="range" min="1" max="5" step="1" value="3" aria-label="Energy today, 1 to 5">
+      <div class="anch"><span>1: Drained</span><span>5: Full</span></div>
+      <div class="demo-out" id="demo-out" role="status">${demoOut(3)}</div></div></div></section>
+
+  <section class="wrap lsec" id="features"><div class="lh rv"><span class="kicker">What is inside</span><h2>Everything a student needs, in one calm place.</h2><p class="soft">Built around the real tools you asked for: a weather-style check-in, screeners for mood, anxiety and attention, and medical requests that reach your director.</p></div>
+    <div class="bento">
+      <div class="bt s4 t-sage rv"><span class="kicker">Check-in</span><h3>A weather forecast for your mood</h3><p>Five quick questions about mood, sleep, stress, connection and workload turn into a forecast and small next steps.</p>
+        <div class="mini-bars" aria-hidden="true"><div><span>Mood</span><i style="--w:70%"></i></div><div><span>Sleep</span><i style="--w:45%"></i></div><div><span>Stress</span><i style="--w:80%"></i></div></div>
+        <div><button class="btn primary" data-act="goStudent" data-v="checkin" type="button">Start a check-in ${ic("arrow", 20)}</button></div></div>
+      <div class="bt s2 t-clay rv"><span class="kicker" style="color:inherit">Always visible</span><h3>Help now</h3><p>Morocco emergency numbers and support lines are one tap away from every page.</p><div><button class="btn light" data-act="help" type="button">Open Help now</button></div></div>
+      <div class="bt s2 t-surf rv"><span class="kicker">Screeners</span><h3>Depression, anxiety, ADHD</h3><p>Short, standard questionnaires with plain-language results. Not a diagnosis.</p><div class="chipset"><span>PHQ-9</span><span>GAD-7</span><span>ASRS</span></div></div>
+      <div class="bt s2 t-blue rv"><span class="kicker">Medical request</span><h3>Ask, send, get a reply</h3><p>Write an exam change or absence request, send it to the director, and read the answer in the app.</p><div><button class="btn" data-act="goStudent" data-v="medical" type="button">Open requests</button></div></div>
+      <div class="bt s2 t-sage rv"><span class="kicker">Calm tools</span><h3>Breathe, ground, focus</h3><p>Guided breathing, a 5-4-3-2-1 grounding exercise, a worry dump, a focus timer and a wind-down list.</p><span class="orb-mini" aria-hidden="true"></span></div>
+      <div class="bt s6 t-ink rv"><span class="kicker" style="color:var(--sage)">For directors</span><h3>See who needs attention, and what to say</h3><p>A dashboard sorts students who chose to share into Urgent, Needs attention, Keep watching and Stable. Each flag comes with what to say, what to do and what to avoid.</p>
+        <div class="levelbar" aria-hidden="true"><i class="lv-urgent" style="flex:1"></i><i class="lv-attention" style="flex:2"></i><i class="lv-watch" style="flex:3"></i><i class="lv-stable" style="flex:6"></i></div>
+        <div><button class="btn light" data-act="goDirector" type="button">Open director area ${ic("arrow", 20)}</button></div></div>
+    </div></section>
+
+  <section class="wrap lsec" id="how"><div class="lh rv"><span class="kicker">How it works</span><h2>Three steps, no sign-up.</h2></div>
+    <div class="steps3">
+      <div class="st rv"><span class="no">1</span><h3>Check in</h3><p>Answer a few questions. You get your forecast and tips straight away, on your device.</p></div>
+      <div class="st rv"><span class="no">2</span><h3>Choose what to share</h3><p>Keep it private, or let your school see your scores so someone can reach out. You decide, and you can switch it off.</p></div>
+      <div class="st rv"><span class="no">3</span><h3>Get support</h3><p>Directors see who needs a hand and follow clear guidance. Your medical requests get a reply inside the app.</p></div>
+    </div></section>
+
+  <section class="wrap lsec" id="who"><div class="lh rv"><span class="kicker">Who it is for</span><h2>Three doors, one goal.</h2></div>
+    <div class="aud">
+      <div class="ap stu rv"><h3>Students</h3><ul>
+        <li>${ic("mood", 22)}<span>Check in privately and see how your week is going.</span></li>
+        <li>${ic("steth", 22)}<span>Prepare a medical request and track the reply.</span></li>
+        <li>${ic("wind", 22)}<span>Use calm tools when things feel heavy.</span></li>
+        <li>${ic("chat", 22)}<span>Get a first message written when you do not know what to say.</span></li></ul>
+        <div><button class="btn primary" data-act="goStudent" type="button">Enter student area</button></div></div>
+      <div class="ap prof rv"><h3>Professors</h3><ul>
+        <li>${ic("chart", 22)}<span>See how each class is doing, as a group.</span></li>
+        <li>${ic("users", 22)}<span>Know which students may need a kind word.</span></li>
+        <li>${ic("chat", 22)}<span>Get simple classroom ideas: what to say and what to do.</span></li>
+        <li>${ic("lockc", 22)}<span>Sensitive details stay with the director.</span></li></ul>
+        <div><button class="btn primary" data-act="goProfessor" type="button">Enter professor area</button></div></div>
+      <div class="ap dir rv"><h3>Directors and staff</h3><ul>
+        <li>${ic("chart", 22)}<span>One overview of well-being across classes.</span></li>
+        <li>${ic("users", 22)}<span>Students sorted by level, with the reasons.</span></li>
+        <li>${ic("chat", 22)}<span>Say, do and avoid guidance for every flag.</span></li>
+        <li>${ic("inbox", 22)}<span>Approve or decline requests with a written reply.</span></li></ul>
+        <div><button class="btn light" data-act="goDirector" type="button">Enter director area</button></div></div>
+    </div></section>
+
+  <section class="wrap lsec" id="privacy"><div class="lh rv"><span class="kicker">Privacy and safety</span><h2>Built so students stay in control.</h2></div>
+    <div class="twocol">
+      <div class="listcard rv"><h3>Stays on your device</h3><ul><li>Your check-ins, screener scores and notes.</li><li>The worry dump, which is never saved at all.</li><li>Your individual screener answers, which are never stored.</li></ul></div>
+      <div class="listcard rv"><h3>Shared only if you choose</h3><ul><li>Your name, class, check-in scores and screener scores, after you turn sharing on.</li><li>A medical request, only when you press send.</li><li>Never your free text, and you can switch sharing off at any time.</li></ul></div>
+    </div>
+    <p class="lfine rv">StuWell is a self-reflection and support tool. It does not diagnose or treat anything and does not replace a doctor, a psychologist or a counsellor. It is not watched in real time. If you are in danger, use Help now.</p></section>
+
+  <section class="wrap lsec" id="faq"><div class="lh rv"><span class="kicker">Questions</span><h2>Good to know before you start.</h2></div>
+    <div class="faq-l rv">
+      <details><summary>Does my school see my answers?</summary><p>Only if you turn sharing on in your profile. Then staff with access can see your name, class, check-in scores and screener scores. They never see free text or your individual screener answers.</p></details>
+      <details><summary>Is this a diagnosis?</summary><p>No. The screeners are standard questionnaires used to decide whether it is worth talking to someone. Only a doctor or psychologist can diagnose anything.</p></details>
+      <details><summary>What if I need help right now?</summary><p>Use Help now at the top of every page. It lists emergency numbers and support lines for Morocco. StuWell is not watched in real time, so never wait for a reply from the app in an emergency.</p></details>
+      <details><summary>How do medical requests work?</summary><p>You write the request in the Medical request tab and press send. The director replies with approved, declined or a question, and you read the answer in the same tab.</p></details>
+      <details><summary>Who can open the director and professor areas?</summary><p>Only school staff who were given Editor access to the page. Everyone else sees a short notice instead.</p></details>
+    </div></section>
+
+  <section class="wrap lsec"><div class="cta rv"><h2>Ready when you are.</h2><p>Take a minute for yourself, or open the dashboard for your school.</p>
+    <div class="row" style="justify-content:center"><button class="btn light" data-act="goStudent" type="button">I am a student</button><button class="btn line-light" data-act="goProfessor" type="button">I am a professor</button><button class="btn line-light" data-act="goDirector" type="button">I am a director</button></div></div></section>`;
+}
+function demoOut(v) {
+  const f = FORECASTS.find(x => v >= x.min) || FORECASTS[4];
+  return `<span class="wi">${wIcon(f.k, 44)}</span><div><b>${esc(f.name)}</b><span class="t">${esc(f.text)}</span></div>`;
+}
+
+/* =====================================================================
+   Director views
+   ===================================================================== */
+const PTABS = ["classes", "students"];
+const PLABEL = { classes: "My classes", students: "Students" };
+const PSAFE = ["bullying", "wantsTalk", "decline", "lowMood", "lonely", "sleep", "stress", "workload"];
+const isProf = () => S.mode === "professor";
+const DLABEL = { overview: "Overview", students: "Students", requests: "Requests", setup: "Setup" };
+function dirGate() {
+  const who = isProf() ? "professors and school staff" : "school staff";
+  if (!LIVE.ready) return `<section class="sec" style="padding-top:34px"><div class="empty">${ic("time", 40)}<b>Checking your access</b><span>One moment.</span></div></section>`;
+  if (LIVE.user && LIVE.edit !== true) {
+    return `<section class="sec" style="padding-top:34px"><div class="panel" style="max-width:640px"><span class="badge">${ic("lockc", 20)} Staff only</span><h2>This area is for ${who}</h2>
+      <p class="soft">It shows well-being information from students who chose to share it, so it is limited to staff who were given Editor access to this page. If you should have access, ask the page owner to share it with you as an Editor.</p>
+      <div class="row"><button class="btn primary" data-act="goStudent" type="button">Go to the student area</button><button class="btn" data-act="goHome" type="button">Back to home</button></div></div></section>`;
+  }
+  return "";
+}
+function dirHead(title, sub) {
+  return `<div class="stack" style="gap:10px;padding-top:34px"><h2>${esc(title)}</h2><p class="sec-sub">${esc(sub)}</p>
+    ${!LIVE.user && !canShare() ? `<p class="fine">Preview mode: you are seeing sample data only. Open StuWell through your school's link to see real students.</p>` : ""}</div>`;
+}
+function emptyDir() {
+  return `<div class="empty">${ic("users", 40)}<b>No students have shared yet</b><span>Students appear here after they turn on sharing in their profile or send a request. You can switch on sample students in Setup to see how it looks.</span><button class="btn sm" data-act="dtab" data-v="setup" type="button">Open Setup</button></div>`;
+}
+function overviewView() {
+  const sts = dirStudents().map(s => ({ s, e: evalStudent(s) }));
+  const head = dirHead("Overview", "How the students who chose to share are doing. Based on self-reported answers, not diagnoses.");
+  if (!sts.length) return head + `<section class="sec" style="padding-top:20px">${emptyDir()}</section>`;
+  const cnt = lv => sts.filter(x => x.e.level === lv).length;
+  const urgent = sts.filter(x => x.e.level === "urgent");
+  const reqs = dirRequests(), pending = reqs.filter(x => !x.rp);
+  const week = sts.reduce((n, x) => n + (x.s.checkins || []).filter(c => Date.now() - c.ts < 7 * DAY).length, 0);
+  const lvls = ["urgent", "attention", "watch", "stable", "none"];
+  const reasons = {}; sts.forEach(x => x.e.flags.forEach(f => { reasons[f] = (reasons[f] || 0) + 1; }));
+  const rk = Object.keys(reasons).sort((a, b) => reasons[b] - reasons[a]).slice(0, 7), rmax = rk.length ? reasons[rk[0]] : 1;
+  const stat = (n, l) => `<div class="dstat"><b>${n}</b><span class="soft">${l}</span></div>`;
+  return head + `<section class="sec" style="padding-top:20px"><div class="stack" style="gap:18px">
+    <div class="dstats">${stat(sts.length, "students sharing")}${stat(cnt("urgent") + cnt("attention"), "need attention")}${stat(pending.length, "requests waiting")}${stat(week, "check-ins this week")}</div>
+    ${urgent.length ? `<div class="alert" role="alert"><h3>${urgent.length === 1 ? "1 student needs help today" : urgent.length + " students need help today"}</h3>
+      <p>A student marked that they feel unsafe or answered the self-harm question. Act today, stay with the student and follow the school safeguarding protocol.</p>
+      ${urgent.map(x => `<div class="mini-row"><span><b>${esc(x.s.name || "Student")}</b> <span class="small">${esc(x.s.cls || "")}</span></span><button class="btn sm" data-act="dopenGo" data-v="${esc(x.s.id)}" type="button">Open guidance</button></div>`).join("")}</div>` : ""}
+    <div class="dgrid">
+      <div class="panel"><h3>Students by level</h3>
+        <div class="levelbar" role="img" aria-label="${lvls.map(l => cnt(l) + " " + LEVEL_LABEL[l]).join(", ")}">${lvls.filter(l => cnt(l)).map(l => `<i class="lv-${l}" style="flex:${cnt(l)}"></i>`).join("")}</div>
+        <div class="legend">${lvls.map(l => `<span><i class="lv-${l}"></i>${LEVEL_LABEL[l]}: <b>${cnt(l)}</b></span>`).join("")}</div></div>
+      <div class="panel"><h3>What is coming up most</h3>
+        ${rk.length ? rk.map(k => `<div class="hbar"><span class="small">${esc(REASON[k] || k)}</span><div class="bar"><i style="width:${Math.round(reasons[k] / rmax * 100)}%"></i></div><b class="mono small">${reasons[k]}</b></div>`).join("") : `<p class="soft">No flags right now.</p>`}</div>
+    </div>
+    <div class="panel"><div class="row" style="justify-content:space-between"><h3>Requests waiting for a reply</h3><button class="btn sm" data-act="dtab" data-v="requests" type="button">Open requests</button></div>
+      ${pending.length ? pending.slice(0, 4).map(x => `<div class="mini-row"><span><b>${esc(x.st.name || "Student")}</b> <span class="small soft">${esc(x.st.cls || "")} · ${esc(REQ_TYPES[x.r.type] || "Request")}</span></span><span class="small soft">${fmtDate(x.r.ts)}</span></div>`).join("") : `<p class="soft">Nothing waiting. Well done.</p>`}</div>
+  </div></section>`;
+}
+function playbookHTML(flags) {
+  const one = k => { const p = PLAYBOOK[k]; if (!p) return "";
+    return `<div class="pb"><div class="row" style="gap:8px"><b>${esc(p.title)}</b><span class="pill tone-${p.tag === "Act today" ? "crit" : p.tag === "This week" ? "attn" : "warn"}">${esc(p.tag)}</span></div>
+      <span class="small soft">${esc(p.signs)}</span>
+      <span class="small"><b>Say:</b> ${esc(p.say)}</span>
+      <span class="small"><b>Do:</b></span><ul class="small">${p.do.map(d => `<li>${esc(d)}</li>`).join("")}</ul>
+      <span class="small"><b>Avoid:</b> ${esc(p.avoid)}</span></div>`; };
+  if (flags.includes("unsafe")) flags = flags.filter(k => k !== "screenSafety");
+  if (!flags.length) return `<p class="soft">No flags. Keep the usual routine and check again next week.</p>`;
+  const first = flags.slice(0, 2).map(one).join(""), rest = flags.slice(2);
+  return first + (rest.length ? `<details><summary class="small"><b>${rest.length} more ${rest.length === 1 ? "flag" : "flags"}</b></summary><div class="stack" style="gap:16px;margin-top:12px">${rest.map(one).join("")}</div></details>` : "");
+}
+function profFlags(e) { return e.flags.filter(f => PSAFE.includes(f)); }
+function studentBody(x) {
+  const { s, e } = x, cks = e.cks.slice(-6).reverse();
+  if (isProf()) {
+    const hidden = e.flags.length > profFlags(e).length;
+    return `<div class="sbody"><div class="stack" style="gap:16px"><div><span class="label">Recent check-ins</span>${cks.length ? `<div class="row" style="gap:16px;margin:8px 0">${spark(e.cks)}<span class="small soft">Latest ${e.idx.toFixed(1)} out of 5</span></div>` : `<p class="soft small">No check-ins shared yet.</p>`}</div>
+      ${hidden ? `<div class="note" style="padding:14px 16px"><b class="small">Please speak to the director</b><p class="small">There is more information about this student that is shared only with the director and the counsellor. Do not ask the student about it. Pass your own concerns on.</p></div>` : ""}
+      <p class="fine">Self-reported answers shared by the student. They are not a diagnosis. Treat them as private.</p></div>
+      <div class="stack" style="gap:16px"><span class="label">What you can say and do</span>${playbookHTML(profFlags(e))}</div></div>`;
+  }
+  const cu = (s.checkups || []).slice(-3).reverse();
+  const rq = (s.requests || []);
+  return `<div class="sbody"><div class="stack" style="gap:16px">
+      <div><span class="label">Recent check-ins</span>${cks.length ? `<div class="row" style="gap:16px;margin:8px 0">${spark(e.cks)}<span class="small soft">Latest ${e.idx.toFixed(1)} out of 5</span></div>
+        <div class="diary">${cks.map(c => { const f = FORECASTS.find(z => c.idx >= z.min); return `<div class="dr"><span class="soft small">${fmtDay(c.ts)}</span><div class="bar"><i style="width:${Math.round(c.idx / 5 * 100)}%"></i></div><span class="small"><b class="mono">${c.idx.toFixed(1)}</b> ${esc(f.name)}</span></div>`; }).join("")}</div>` : `<p class="soft small">No check-ins shared yet.</p>`}</div>
+      ${cu.length ? `<div><span class="label">Screeners</span>${cu.map(c => `<p class="small">${esc(SCR[c.kind] ? SCR[c.kind].name : c.kind)} · ${fmtDate(c.ts)}: ${c.score} out of ${c.max}${c.safety ? " · answered the self-harm question" : ""}</p>`).join("")}</div>` : ""}
+      ${rq.length ? `<div><span class="label">Requests</span>${rq.map(r => { const rp = replyFor(s, r), st = REQ_STATUS[rp ? rp.status : "sent"] || REQ_STATUS.sent; return `<p class="small">${esc(REQ_TYPES[r.type] || "Request")} · ${fmtDate(r.ts)} · <span class="pill tone-${st[1]}">${st[0]}</span></p>`; }).join("")}<button class="btn sm" data-act="dtab" data-v="requests" type="button">Open requests</button></div>` : ""}
+      <p class="fine">Self-reported answers shared by the student. They are not a diagnosis. Treat them as private.</p></div>
+    <div class="stack" style="gap:16px"><span class="label">What to say and do</span>${playbookHTML(e.flags)}</div></div>`;
+}
+function studentsListHTML() {
+  const q = S.fq.trim().toLowerCase();
+  let list = dirStudents().map(s => ({ s, e: evalStudent(s) }));
+  if (q) list = list.filter(x => (x.s.name || "").toLowerCase().includes(q));
+  if (S.fcls) list = list.filter(x => x.s.cls === S.fcls);
+  if (S.flev) list = list.filter(x => x.e.level === S.flev);
+  list.sort((a, b) => LEVELS[a.e.level] - LEVELS[b.e.level] || (a.s.name || "").localeCompare(b.s.name || ""));
+  if (!list.length) return `<div class="empty" style="margin:18px">${ic("users", 40)}<b>No students match</b><span>Change the search or the filters.</span></div>`;
+  return list.map(x => { const open = S.open === x.s.id;
+    return `<div class="swrap" id="st-${esc(x.s.id)}"><button class="srow" data-act="dopen" data-v="${esc(x.s.id)}" aria-expanded="${open}" type="button">
+      <span><b>${esc(x.s.name || "Student")}</b><span class="soft small" style="display:block">${esc(x.s.cls || "No class")} · ${x.e.last ? "last check-in " + fmtDate(x.e.last.ts) : "no check-in yet"}</span></span>
+      <span class="chips">${(isProf() ? profFlags(x.e) : x.e.flags).slice(0, 3).map(f => `<span class="chip">${esc(REASON[f] || f)}</span>`).join("")}${(isProf() ? profFlags(x.e) : x.e.flags).length > 3 ? `<span class="chip">+${(isProf() ? profFlags(x.e) : x.e.flags).length - 3}</span>` : ""}</span>
+      <span class="row" style="gap:8px;flex-wrap:nowrap">${isProf() && x.e.flags.length > profFlags(x.e).length ? `<span class="pill tone-attn">See the director</span>` : levelPill(x.e.level)}<span class="chev" style="transform:rotate(${open ? 180 : 0}deg)">${ic("chev", 22)}</span></span></button>${open ? studentBody(x) : ""}</div>`; }).join("");
+}
+function studentsView() {
+  const all = dirStudents(), classes = Array.from(new Set(all.map(s => s.cls).filter(Boolean))).sort();
+  const head = dirHead("Students", isProf() ? "Students who turned on sharing. Open a student for ideas on what to say and do in class. Sensitive details stay with the director." : "Only students who turned on sharing appear here. Open a student to see their recent weather and what to say and do.");
+  if (!all.length) return head + `<section class="sec" style="padding-top:20px">${emptyDir()}</section>`;
+  return head + `<section class="sec" style="padding-top:20px"><div class="stack" style="gap:16px"><div class="filters">
+    <div class="fld"><label for="dq">Search by name</label><input class="field" id="dq" type="search" value="${esc(S.fq)}" autocomplete="off"></div>
+    <div class="fld"><label for="dcls">Class</label><select class="field" id="dcls"><option value="">All classes</option>${classes.map(c => `<option value="${esc(c)}" ${S.fcls === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></div>
+    <div class="fld"><label for="dlev">Level</label><select class="field" id="dlev"><option value="">All levels</option>${Object.keys(LEVEL_LABEL).map(l => `<option value="${l}" ${S.flev === l ? "selected" : ""}>${LEVEL_LABEL[l]}</option>`).join("")}</select></div></div>
+    <div class="slist" id="slist">${studentsListHTML()}</div></div></section>`;
+}
+function reqCard(x) {
+  const { st, r, rp } = x, s = REQ_STATUS[rp ? rp.status : "sent"] || REQ_STATUS.sent;
+  const dates = r.from ? `${fmtDate(new Date(r.from + "T00:00").getTime())}${r.until ? " to " + fmtDate(new Date(r.until + "T00:00").getTime()) : ""}` : "";
+  const key = esc(st.id) + "-" + esc(r.id);
+  return `<div class="req"><div class="row" style="justify-content:space-between;flex-wrap:nowrap;align-items:flex-start"><div style="min-width:0"><b>${esc(st.name || "Student")} <span class="soft small">${esc(st.cls || "")}</span></b><span class="soft small" style="display:block">${esc(REQ_TYPES[r.type] || "Request")} · sent ${fmtDate(r.ts)}${dates ? " · " + esc(dates) : ""}</span></div><span class="pill tone-${s[1]}">${s[0]}</span></div>
+    <p>${esc(r.notes)}</p><p class="small soft">${r.cert ? "Has a medical certificate." : "No certificate yet."}</p>
+    ${rp && rp.reply ? `<div class="note" style="padding:14px 16px"><b class="small">Your reply · ${fmtDate(rp.ts)}</b><p class="small">${esc(rp.reply)}</p></div>` : ""}
+    ${rp && rp.status !== "info" ? "" : `<div class="fld"><label for="rp-${key}">Reply to the student${rp ? " (more info)" : ""}</label><textarea class="field" id="rp-${key}" placeholder="Example: Approved. Please bring the original certificate to the administration."></textarea></div>
+    <div class="row"><button class="btn primary sm" data-act="dreply" data-v="approved" data-sid="${esc(st.id)}" data-rid="${esc(r.id)}" type="button">Approve</button><button class="btn sm" data-act="dreply" data-v="declined" data-sid="${esc(st.id)}" data-rid="${esc(r.id)}" type="button">Decline</button><button class="btn sm ghost" data-act="dreply" data-v="info" data-sid="${esc(st.id)}" data-rid="${esc(r.id)}" type="button">Ask for more info</button></div>`}</div>`;
+}
+function requestsView() {
+  const reqs = dirRequests(), pend = reqs.filter(x => !x.rp || x.rp.status === "info"), done = reqs.filter(x => x.rp && x.rp.status !== "info");
+  const head = dirHead("Requests", "Medical and absence requests that students sent. Your reply appears in the student's app.");
+  if (!reqs.length) return head + `<section class="sec" style="padding-top:20px"><div class="empty">${ic("inbox", 40)}<b>No requests yet</b><span>Requests appear here when a student presses send in the Medical request tab.</span></div></section>`;
+  return head + `<section class="sec" style="padding-top:20px"><div class="stack" style="gap:22px">
+    <div class="stack" style="gap:12px"><h3>Waiting for a reply (${pend.length})</h3>${pend.length ? pend.map(reqCard).join("") : `<p class="soft">Nothing waiting.</p>`}</div>
+    ${done.length ? `<div class="stack" style="gap:12px"><h3>Answered (${done.length})</h3>${done.map(reqCard).join("")}</div>` : ""}</div></section>`;
+}
+function setupView() {
+  const live = !!LIVE.db, n = DIR.students.length;
+  return dirHead("Setup", "How this dashboard gets its data, who can see it, and how to give people access.") + `<section class="sec" style="padding-top:20px"><div class="stack" style="gap:18px">
+    <div class="dgrid">
+      <div class="panel"><h3>Connection</h3>
+        <p class="small">${live && LIVE.edit ? `Connected. ${n} ${n === 1 ? "student has" : "students have"} shared real data.` : live ? "Connected as a student." : "Not connected. This page is running as a local preview, so only sample data is shown."}</p>
+        ${LIVE.err ? `<p class="small" style="color:var(--crit-ink)">Last problem: ${esc(LIVE.err)}</p>` : ""}
+        <div class="checks"><label><input type="checkbox" id="sample-toggle" ${S.demo ? "checked" : ""}><span>Show fictional sample students</span></label></div>
+        <p class="fine">Sample students are made up and are never saved. Turn them off before real use.</p></div>
+      <div class="panel"><h3>Who can do what</h3>
+        <ul class="small stack" style="gap:8px;padding-left:18px;margin:0"><li><b>Students</b> need Contributor access. They see only their own data.</li><li><b>Directors and professors</b> need Editor access. The professor area hides sensitive details, but the page itself cannot tell a professor from a director, so give Editor access only to staff you trust.</li><li>Anyone else sees the landing page and nothing more.</li></ul>
+        <p class="fine">Set this in the Share menu of the page. Giving someone Editor access also lets them change the page itself, so give it only to trusted staff.</p></div>
+    </div>
+    <div class="panel"><h3>What students share</h3>
+      <ul class="small stack" style="gap:8px;padding-left:18px;margin:0"><li>Only after they turn it on: name, class, check-in scores and flags, screener scores.</li><li>Only when they press send: a medical request and their name.</li><li>Never free text from check-ins or screener answers.</li></ul>
+      <p class="fine">Student information is sensitive. Share it only with people who need it to help, and keep notes in your school's own safeguarding system. StuWell is not watched in real time, so it must never be the only way a student can reach help.</p></div>
+  </div></section>`;
+}
+function classesView() {
+  const head = dirHead("My classes", "How each class is doing as a group. Only students who chose to share are counted.");
+  const sts = dirStudents().map(s => ({ s, e: evalStudent(s) }));
+  if (!sts.length) return head + `<section class="sec" style="padding-top:20px">${emptyDir()}</section>`;
+  const by = {}; sts.forEach(x => { const k = x.s.cls || "No class"; (by[k] = by[k] || []).push(x); });
+  const lvls = ["urgent", "attention", "watch", "stable", "none"];
+  const cards = Object.keys(by).sort().map(k => { const g = by[k], c = lv => g.filter(x => x.e.level === lv).length;
+    const idxs = g.filter(x => x.e.idx != null && Date.now() - x.e.last.ts < 14 * DAY).map(x => x.e.idx), avg = idxs.length ? idxs.reduce((p, q) => p + q, 0) / idxs.length : null;
+    const f = avg != null ? FORECASTS.find(z => avg >= z.min) : null, talk = c("urgent") + c("attention");
+    return `<div class="panel"><div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h3>Class ${esc(k)}</h3><span class="small soft">${g.length} ${g.length === 1 ? "student" : "students"}</span></div>
+      <div class="row" style="gap:14px;flex-wrap:nowrap">${f ? `<span class="spark">${wIcon(f.k, 44)}</span><div><b>${esc(f.name)}</b><span class="small soft" style="display:block">Class average ${avg.toFixed(1)} out of 5</span></div>` : `<span class="soft small">No recent check-ins</span>`}</div>
+      <div class="levelbar" role="img" aria-label="${lvls.map(l => c(l) + " " + LEVEL_LABEL[l]).join(", ")}">${lvls.filter(l => c(l)).map(l => `<i class="lv-${l}" style="flex:${c(l)}"></i>`).join("")}</div>
+      <p class="small">${talk ? `<b>${talk}</b> ${talk === 1 ? "student could use" : "students could use"} a kind word or a quiet check-in.` : "Nobody stands out right now."}</p></div>`; }).join("");
+  return head + `<section class="sec" style="padding-top:20px"><div class="stack" style="gap:18px"><div class="dgrid">${cards}</div>
+    <div class="note"><h3>How you can help</h3><p>Small things work: greet students by name, give clear deadlines, leave room for questions, and keep a quiet word for anyone who seems different. Open Students to see what to say and do for each flag.</p></div></div></section>`;
+}
+function dirRefresh() {
+  if (S.mode !== "director" && S.mode !== "professor") return;
+  const a = document.activeElement;
+  if (a && a.closest && a.closest("#main") && /^(TEXTAREA|INPUT)$/.test(a.tagName)) return;
+  render();
+}
+
+/* =====================================================================
+   Header, menu, footer, dialogs
+   ===================================================================== */
+function applyTheme() {
+  const r = document.documentElement;
+  if (S.theme === "light" || S.theme === "dark") r.setAttribute("data-theme", S.theme); else r.removeAttribute("data-theme");
+}
+function menuHTML() {
+  const it = (act, v, icon, label, sub) => `<button class="mi" role="menuitem" data-act="${act}" ${v ? `data-v="${v}"` : ""} type="button">${ic(icon, 22)}<span><b>${label}</b>${sub ? `<span class="soft small" style="display:block">${sub}</span>` : ""}</span></button>`;
+  return `<div class="menu-wrap"><button id="menu-btn" class="menu-btn" data-act="menu" aria-haspopup="menu" aria-expanded="${S.menu}" aria-label="Options menu" type="button">${ic("dots", 24)}</button>${S.menu ? `<div class="menu" role="menu" id="menu">
+    ${it("goHome", "", "home", "Home", "Landing page")}
+    ${it("goStudent", "", "user", "Student area", "Check-in, screeners, calm tools")}
+    ${it("goProfessor", "", "book", "Professor area", "Classes and students")}
+    ${it("goDirector", "", "shield", "Director area", "Overview, students, requests")}
+    <hr class="mdiv">
+    ${it("dlg", "profile", "lockc", "My profile and sharing", "Choose what your school can see")}
+    ${it("help", "", "help", "Help now", "Emergency numbers")}
+    ${it("dlg", "about", "book", "About and privacy", "What is stored and who can see it")}
+    <hr class="mdiv">
+    <div class="mtheme"><span class="small"><b>Appearance</b></span><div class="seg" role="group" aria-label="Appearance">${["auto", "light", "dark"].map(t => `<button type="button" data-act="theme" data-v="${t}" aria-pressed="${S.theme === t}">${t[0].toUpperCase() + t.slice(1)}</button>`).join("")}</div></div>
+    <hr class="mdiv">
+    ${S.confirmWipe ? `<div class="mconfirm"><span class="small">Delete the check-ins, results, requests and profile saved on this device? If sharing was on, this also removes what you shared with school.</span><div class="row"><button class="btn sm primary" data-act="wipeYes" type="button">Yes, delete</button><button class="btn sm ghost" data-act="wipeNo" type="button">Keep</button></div></div>` : it("wipeAsk", "", "trash", "Clear my data on this device")}
+  </div>` : ""}</div>`;
+}
+function renderHeader() {
+  const h = $("#hdr"); if (!h) return;
+  const chip = S.mode === "student" ? `<span class="mode-chip">Student</span>` : S.mode === "director" ? `<span class="mode-chip dir">Director</span>` : S.mode === "professor" ? `<span class="mode-chip soft">Professor</span>` : "";
+  const links = S.mode === "home" ? `<nav class="nav-links" aria-label="Page sections">${[["features", "Features"], ["how", "How it works"], ["who", "Who it is for"], ["faq", "Questions"]].map(x => `<button class="nl" data-act="jump" data-v="${x[0]}" type="button">${x[1]}</button>`).join("")}</nav>` : "";
+  const tabLabel = { checkin: "Check-in", screeners: "Screeners", medical: "Medical request", calm: "Calm tools", support: "Get support" };
+  const tabs = S.mode === "student"
+    ? `<nav class="tabs" aria-label="Student sections">${TABS.map(t => `<button class="tab" data-tab="${t}" type="button" ${t === S.tab ? 'aria-current="page"' : ""}>${tabLabel[t]}</button>`).join("")}</nav>`
+    : S.mode === "professor"
+      ? `<nav class="tabs fit" aria-label="Professor sections">${PTABS.map(t => `<button class="tab" data-ptab="${t}" type="button" ${t === S.ptab ? 'aria-current="page"' : ""}>${PLABEL[t]}</button>`).join("")}</nav>`
+      : S.mode === "director"
+      ? `<nav class="tabs fit" aria-label="Director sections">${DTABS.map(t => `<button class="tab" data-dtab="${t}" type="button" ${t === S.dtab ? 'aria-current="page"' : ""}>${DLABEL[t]}</button>`).join("")}</nav>` : "";
+  h.innerHTML = `<div class="top-row"><a class="brand" href="#" data-act="goHome" aria-label="StuWell home">${logoSvg(46)}<span class="wm"><span class="a">Stu</span><span class="b">Well</span></span></a>${links}
+    <div class="top-right">${chip}<button class="help-pill" data-act="help" type="button">${ic("help", 22)}Help now</button>${menuHTML()}</div></div>${tabs}`;
+}
+function renderFooter() {
+  const f = $("#ftr"); if (!f) return;
+  if (S.mode === "home") {
+    f.innerHTML = `<div class="lfoot"><div class="stack" style="gap:10px"><span class="brand" style="pointer-events:none">${logoSvg(40)}<span class="wm"><span class="a">Stu</span><span class="b">Well</span></span></span><p class="soft small">Your well-being, our priority.</p></div>
+      <div><h4>Students</h4><button class="lk" data-act="goStudent" data-v="checkin" type="button">Check-in</button><button class="lk" data-act="goStudent" data-v="screeners" type="button">Screeners</button><button class="lk" data-act="goStudent" data-v="medical" type="button">Medical request</button><button class="lk" data-act="goStudent" data-v="calm" type="button">Calm tools</button></div>
+      <div><h4>Directors</h4><button class="lk" data-act="goDirector" data-v="overview" type="button">Overview</button><button class="lk" data-act="goDirector" data-v="students" type="button">Students</button><button class="lk" data-act="goDirector" data-v="requests" type="button">Requests</button></div>
+      <div><h4>Professors</h4><button class="lk" data-act="goProfessor" data-v="classes" type="button">My classes</button><button class="lk" data-act="goProfessor" data-v="students" type="button">Students</button></div>
+      <div><h4>Help</h4><button class="lk" data-act="help" type="button">Help now</button><button class="lk" data-act="dlg" data-v="about" type="button">About and privacy</button><button class="lk" data-act="goStudent" data-v="support" type="button">Get support</button></div></div>
+      <p class="lfine">StuWell is a self-reflection and support tool. It does not diagnose or treat any condition and does not replace a doctor, a psychologist or a counsellor. A Business English group project.</p>`;
+  } else {
+    f.innerHTML = `<div class="foot"><p><b>Your well-being, our priority.</b> StuWell is a self-reflection tool. It does not diagnose or treat any condition and does not replace a doctor, a psychologist or a counsellor.</p>
+      <p>${S.mode === "director" || S.mode === "professor" ? "Student information is private. Share it only with people who need it to help." : "Private by default: your answers stay on this device unless you choose to share them with your school."}</p></div>`;
+  }
+}
+function aboutDialog() {
+  return `<div class="backdrop" data-act="bd"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t" tabindex="-1" id="dlg">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 id="dlg-t" style="font-size:1.7rem">About and privacy</h2><button class="btn ghost sm" data-act="closeHelp" type="button" aria-label="Close">${ic("close", 22)}</button></div>
+    <div class="stack" style="gap:8px"><span class="label">Stays on your device</span><p>Your check-ins, screener scores, saved requests and settings are stored in this browser only. Your individual screener answers and the worry dump are never stored.</p></div>
+    <div class="stack" style="gap:8px"><span class="label">Shared only if you choose</span><p>If you turn on sharing in My profile and sharing, school staff with Editor access can see your name, class, check-in scores and flags, and screener scores. A medical request is shared only when you press send. Free text from check-ins is never shared. You can switch sharing off at any time.</p></div>
+    <div class="stack" style="gap:8px"><span class="label">Please remember</span><p>StuWell is not watched in real time and is not a replacement for a doctor, a psychologist or a counsellor. If you are in danger, use Help now.</p></div>
+    <button class="btn primary" data-act="closeHelp" type="button">Close</button></div></div>`;
+}
+function profileDialog() {
+  const p = S.pf, ok = canShare();
+  return `<div class="backdrop" data-act="bd"><div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-t" tabindex="-1" id="dlg">
+    <div class="row" style="justify-content:space-between;flex-wrap:nowrap"><h2 id="dlg-t" style="font-size:1.7rem">Profile and sharing</h2><button class="btn ghost sm" data-act="closeHelp" type="button" aria-label="Close">${ic("close", 22)}</button></div>
+    <p class="soft">Your name and class help staff know who a request or check-in is from. It is optional unless you share or send something.</p>
+    <div class="fields"><div class="fld"><label for="pf-name">Your name</label><input class="field" id="pf-name" type="text" autocomplete="name" value="${esc(p.name)}"></div>
+      <div class="fld"><label for="pf-cls">Class or program</label><input class="field" id="pf-cls" type="text" value="${esc(p.cls)}"></div></div>
+    <label class="choice"><input type="checkbox" id="pf-share" ${p.share ? "checked" : ""} ${ok ? "" : "disabled"}><span><b>Let my school see how I am doing</b><span class="soft small" style="display:block">Staff can see my name, class, check-in scores and screener scores, never my free text. I can turn this off at any time.</span></span></label>
+    ${ok ? "" : `<p class="fine">Sharing is off in this view. It works when you open StuWell through the link your school gave you.</p>`}
+    <p class="fine">StuWell is not watched in real time. If you need help now, use Help now or talk to someone you trust.</p>
+    <div class="row"><button class="btn primary" data-act="pfSave" type="button">Save</button><button class="btn" data-act="closeHelp" type="button">Cancel</button></div></div></div>`;
+}
+let lastFocus = null;
+function openDlg(kind) {
+  lastFocus = document.activeElement; S.dlg = kind; S.menu = false;
+  if (kind === "profile") S.pf = { name: D.profile.name || "", cls: D.profile.cls || "", share: !!D.profile.share };
+  $("#dlg-root").innerHTML = kind === "help" ? helpDialog() : kind === "about" ? aboutDialog() : profileDialog();
+  document.body.style.overflow = "hidden"; renderHeader();
+  const d = $("#dlg"); if (d) d.focus();
+}
+function closeDlg() {
+  S.dlg = null; $("#dlg-root").innerHTML = ""; document.body.style.overflow = "";
+  if (lastFocus && lastFocus.focus && document.contains(lastFocus)) lastFocus.focus();
+}
+const openHelp = () => openDlg("help");
+
+/* =====================================================================
+   Render and navigation
+   ===================================================================== */
+function dirViews() { return { overview: overviewView, students: studentsView, requests: requestsView, setup: setupView }; }
+function render() {
+  cleanupTools(); renderHeader(); renderFooter();
+  const m = $("#main"); m.className = S.mode === "home" ? "" : "wrap";
+  if (S.mode === "home") m.innerHTML = landingView();
+  else if (S.mode === "student") { const views = { checkin: checkinView, screeners: screenersView, medical: medicalView, calm: calmView, support: supportView }; m.innerHTML = views[S.tab](); fPaint(); }
+  else if (S.mode === "professor") { const g = dirGate(); m.innerHTML = g || (S.ptab === "students" ? studentsView() : classesView()); }
+  else { const g = dirGate(); m.innerHTML = g || dirViews()[S.dtab](); }
+}
+function renderCalm() { cleanupTools(); $("#calm-body").innerHTML = calmBody(); fPaint(); }
+let lastHash = null;
+function hashFor() { return S.mode === "home" ? "" : S.mode + "/" + (S.mode === "student" ? S.tab : S.mode === "professor" ? S.ptab : S.dtab); }
+function setHash() { const h = hashFor(); lastHash = h; try { if (location.hash.slice(1) !== h) location.hash = h; } catch (e) { /* ignore */ } }
+function nav(mode, tab) {
+  if (mode !== S.mode) { S.flow = null; S.step = 0; }
+  S.mode = mode; S.menu = false; S.confirmWipe = false;
+  if (mode === "student" && tab && TABS.includes(tab)) S.tab = tab;
+  if (mode === "director" && tab && DTABS.includes(tab)) S.dtab = tab;
+  if (mode === "professor" && tab && PTABS.includes(tab)) S.ptab = tab;
+  setHash(); render(); top0();
+}
+function go(t) { nav("student", t); }
+function parseHash() {
+  const [m, t] = location.hash.slice(1).split("/");
+  if (m === "student" || TABS.includes(m)) { S.mode = "student"; const tb = m === "student" ? t : m; if (TABS.includes(tb)) S.tab = tb; }
+  else if (m === "director") { S.mode = "director"; if (DTABS.includes(t)) S.dtab = t; }
+  else if (m === "professor") { S.mode = "professor"; if (PTABS.includes(t)) S.ptab = t; }
+  else S.mode = "home";
+}
+function exitFlow() { S.flow = null; S.step = 0; render(); top0(); }
+function startScr(k) {
+  S.scr = k; S.scrAns = []; S.scrRes = null; S.flow = "scr"; S.step = 0;
+  if (S.mode !== "student" || S.tab !== "screeners") go("screeners"); else { render(); top0(); }
+}
+function sharingStrip() {
+  const on = D.profile.share && canShare();
+  return `<section class="sec"><div class="reach" style="background:var(--surface-2)"><div class="stack" style="gap:8px"><h3>${on ? "Sharing with your school is on" : "Your data stays on this device"}</h3><p class="soft">${on ? "School staff can see your name, class and check-in scores, never your free text. You can turn it off at any time." : "Want your school to see how you are doing, so someone can reach out? You choose. It is off until you turn it on."}</p></div><button class="btn" data-act="dlg" data-v="profile" type="button">Profile and sharing</button></div></section>`;
+}
+function refreshMedList() { const o = $("#rq-out"), l = $("#rq-list"); if (o) o.innerHTML = rqOutHTML(); if (l) l.innerHTML = rqListHTML(); }
+function wipeLocal() {
+  const pushed = D.profile.pushed;
+  D = { checkins: [], checkups: [], requests: [], profile: { name: "", cls: "", share: false, pushed } };
+  save(); S.rqOut = ""; S.rqSaved = false; S.result = null; S.scrRes = null; S.flow = null;
+  return pushed ? pushShared() : Promise.resolve(true);
+}
+
+/* =====================================================================
+   Events
+   ===================================================================== */
+document.addEventListener("click", e => {
+  if (S.menu && !e.target.closest(".menu-wrap")) { S.menu = false; S.confirmWipe = false; renderHeader(); }
+  const tb = e.target.closest("[data-tab]");
+  if (tb) {
+    if (tb.dataset.tab === S.tab && S.mode === "student" && ((S.tab === "checkin" && S.flow === "cires") || (S.tab === "screeners" && S.flow === "scrres"))) { exitFlow(); return; }
+    go(tb.dataset.tab); return;
+  }
+  const pt = e.target.closest("[data-ptab]");
+  if (pt) { nav("professor", pt.dataset.ptab); return; }
+  const dt = e.target.closest("[data-dtab]");
+  if (dt) { nav("director", dt.dataset.dtab); return; }
+  const el = e.target.closest("[data-act]");
+  if (!el) return;
+  const act = el.dataset.act, v = el.dataset.v;
+  if (act === "goHome" && el.tagName === "A") e.preventDefault();
+  switch (act) {
+    case "help": openDlg("help"); break;
+    case "dlg": openDlg(v); break;
+    case "closeHelp": closeDlg(); break;
+    case "bd": if (e.target === el) closeDlg(); break;
+    case "menu": S.menu = !S.menu; S.confirmWipe = false; renderHeader(); { const b = S.menu ? document.querySelector("#menu .mi") : $("#menu-btn"); if (b) b.focus(); } break;
+    case "goHome": nav("home"); break;
+    case "goStudent": nav("student", v || (S.mode === "student" ? S.tab : "checkin")); break;
+    case "goProfessor": nav("professor", v || S.ptab); break;
+    case "goDirector": nav("director", v || S.dtab); break;
+    case "dtab": nav("director", v); break;
+    case "jump": { const t = document.getElementById(v); if (t && t.scrollIntoView) t.scrollIntoView({ behavior: "smooth", block: "start" }); break; }
+    case "theme": S.theme = v; applyTheme(); try { localStorage.setItem("stuwell-theme", v); } catch (err) { /* ignore */ } renderHeader(); break;
+    case "wipeAsk": S.confirmWipe = true; renderHeader(); break;
+    case "wipeNo": S.confirmWipe = false; renderHeader(); break;
+    case "wipeYes": S.menu = false; S.confirmWipe = false; wipeLocal().then(() => { render(); toast("Your data on this device was deleted"); }); break;
+    case "pfSave": {
+      const p = S.pf;
+      if (p.share && !p.name.trim()) { toast("Add your name to share with your school"); const n = $("#pf-name"); if (n) n.focus(); break; }
+      D.profile.name = p.name.trim(); D.profile.cls = p.cls.trim(); D.profile.share = !!p.share && canShare();
+      if (!S.rq.name && D.profile.name) S.rq.name = D.profile.name;
+      if (!S.rq.cls && D.profile.cls) S.rq.cls = D.profile.cls;
+      save(); closeDlg();
+      pushShared().then(ok => { if (!ok && canShare()) toast("Saved here, but could not reach the school. Try again later."); else toast(D.profile.share ? "Saved. Sharing with your school is on." : "Saved"); });
+      if (S.mode === "student") render();
+      break; }
+    case "dopen": S.open = S.open === v ? null : v; { const l = $("#slist"); if (l) l.innerHTML = studentsListHTML(); } break;
+    case "dopenGo": S.open = v; S.fq = ""; S.fcls = ""; S.flev = ""; nav("director", "students"); setTimeout(() => { const t = document.getElementById("st-" + v); if (t && t.scrollIntoView) t.scrollIntoView({ block: "start" }); }, 30); break;
+    case "dreply": {
+      const sid = el.dataset.sid, rid = el.dataset.rid, ta = document.getElementById("rp-" + sid + "-" + rid), txt = ta ? ta.value.trim() : "";
+      if (v === "info" && !txt) { toast("Write what you need to know first"); if (ta) ta.focus(); break; }
+      const key = "r_" + rid, rec = { status: v, reply: txt.slice(0, 600), ts: Date.now() };
+      const st = dirStudents().find(s => s.id === sid);
+      if (st && st.demo) { S.demoReplies[sid] = Object.assign({}, S.demoReplies[sid] || {}, { [key]: rec }); render(); toast("Reply saved (sample data)"); break; }
+      if (!LIVE.db) { toast("Not connected to the school page"); break; }
+      const next = Object.assign({}, DIR.replies[sid] || {}, { [key]: rec });
+      LIVE.db.doc("replies/" + sid).set(next).then(() => { DIR.replies[sid] = next; render(); toast("Reply sent to the student"); }, () => toast("Could not send the reply. Try again."));
+      break; }
+    case "startCi": S.flow = "ci"; S.step = 0; S.ans = {}; S.concerns = {}; S.result = null; render(); top0(); break;
+    case "justBreathe": S.tool = "breathe"; go("calm"); break;
+    case "exitFlow": exitFlow(); break;
+    case "ans": {
+      const q = QUESTIONS[S.step]; if (!q) break;
+      S.ans[q.k] = +v; const cur = S.step; render();
+      setTimeout(() => { if (S.flow === "ci" && S.step === cur) { S.step++; render(); top0(); } }, 240);
+      break; }
+    case "next": if (S.flow === "ci" && S.ans[QUESTIONS[S.step].k]) { S.step++; render(); top0(); } break;
+    case "prev": if (S.step > 0) { S.step--; render(); top0(); } break;
+    case "finishCi": {
+      const r = computeCheckin(); S.result = r; S.flow = "cires";
+      D.checkins.push({ ts: Date.now(), mood: S.ans.mood, sleep: S.ans.sleep, stress: S.ans.stress, social: S.ans.social, workload: S.ans.workload, idx: Math.round(r.idx * 10) / 10, flags: r.flags.slice(), unsafe: !!r.unsafe });
+      D.checkins = D.checkins.slice(-60); save(); pushShared(); render(); top0(); break; }
+    case "scr": startScr(v); break;
+    case "sans": {
+      const s = SCR[S.scr]; S.scrAns[S.step] = +v; const cur = S.step; render();
+      setTimeout(() => {
+        if (S.flow !== "scr" || S.step !== cur) return;
+        if (cur + 1 < s.qs.length) { S.step++; render(); top0(); }
+        else {
+          const rep = scrReport(S.scr, S.scrAns); S.scrRes = rep; S.flow = "scrres";
+          D.checkups.push({ ts: Date.now(), kind: S.scr, label: rep.label, score: rep.score, max: rep.max, safety: !!rep.safety }); D.checkups = D.checkups.slice(-20); save(); pushShared();
+          render(); top0();
+        }
+      }, 240);
+      break; }
+    case "rqPrepare": {
+      if (S.rq.notes.trim().length < 5) { toast("Describe what you need first"); const n = $("#rq-notes"); if (n) n.focus(); break; }
+      S.rqOut = buildRq(); S.rqSaved = false; $("#rq-out").innerHTML = rqOutHTML();
+      const t = $("#rq-text"); if (t && t.scrollIntoView) t.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      break; }
+    case "rqCopy": {
+      const fallback = () => { const b = $("#rq-text"); if (b) { const rg = document.createRange(); rg.selectNodeContents(b); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(rg); } toast("Request selected. Press and hold to copy."); };
+      try { navigator.clipboard.writeText(S.rqOut).then(() => toast("Request copied"), fallback); } catch (err) { fallback(); }
+      break; }
+    case "rqSave":
+      D.requests.push({ id: Date.now().toString(36), ts: Date.now(), type: S.rq.type, to: S.rq.to, cert: S.rq.cert, notes: S.rq.notes.trim(), from: S.rq.from, until: S.rq.until, status: "prepared" });
+      D.requests = D.requests.slice(-30); save(); S.rqSaved = true; refreshMedList(); toast("Saved to your requests"); break;
+    case "rqSend": {
+      if (S.rq.notes.trim().length < 5) { toast("Describe what you need first"); const n = $("#rq-notes"); if (n) n.focus(); break; }
+      const pf = D.profile;
+      if (!(pf.name || S.rq.name).trim()) { openDlg("profile"); toast("Add your name so the school knows who it is from"); break; }
+      if (!canShare()) { toast("Sending works from your school's StuWell link. Copy the request instead."); break; }
+      if (!pf.name) pf.name = S.rq.name.trim().slice(0, 60);
+      if (!pf.cls && S.rq.cls) pf.cls = S.rq.cls.trim().slice(0, 30);
+      const id = Date.now().toString(36);
+      D.requests.push({ id, ts: Date.now(), type: S.rq.type, to: S.rq.to, cert: S.rq.cert, notes: S.rq.notes.trim(), from: S.rq.from, until: S.rq.until, sent: true, status: "sent" });
+      D.requests = D.requests.slice(-30); save(); S.rqSaved = true; refreshMedList();
+      pushShared().then(ok => {
+        if (!ok) { const r = D.requests.find(x => x.id === id); if (r) { r.sent = false; r.status = "prepared"; save(); } toast("Could not send it. It is saved on this device."); }
+        else toast("Sent to your director");
+        refreshMedList();
+      });
+      break; }
+    case "rqRemove": { const r = D.requests.find(x => x.id === v); D.requests = D.requests.filter(x => x.id !== v); save(); refreshMedList(); toast("Request removed"); if (r && r.sent) pushShared(); break; }
+    case "toTab": S.flow = null; go(v); break;
+    case "toTool": S.tool = v; S.flow = null; go("calm"); break;
+    case "readTopic": S.flow = null; S.topic = v; go("support"); setTimeout(() => { const t = $("#topic-" + v); if (t) t.scrollIntoView({ block: "start" }); }, 30); break;
+    case "clearAsk": S.confirmClear = true; $("#diary").innerHTML = diaryHTML(); break;
+    case "clearNo": S.confirmClear = false; $("#diary").innerHTML = diaryHTML(); break;
+    case "clearYes": D.checkins = []; D.checkups = []; save(); S.confirmClear = false; $("#diary").innerHTML = diaryHTML(); toast("History cleared"); pushShared(); break;
+    case "tool": S.tool = v; renderCalm(); break;
+    case "pat": stopBreath(); S.pat = v; renderCalm(); break;
+    case "bstart": startBreath(); break;
+    case "gnext": S.ground++; renderCalm(); break;
+    case "gprev": if (S.ground > 0) { S.ground--; renderCalm(); } break;
+    case "gagain": S.ground = 0; renderCalm(); break;
+    case "letgo": {
+      const box = $("#wdbox"), ta = $("#worry");
+      if (!ta || !ta.value.trim()) { toast("Write something first, then let it go"); break; }
+      box.classList.add("gone");
+      setTimeout(() => { S.worry = ""; renderCalm(); toast("Let go. Nothing was saved."); }, 600);
+      break; }
+    case "fmode": F.mode = v; F.run = false; clearInterval(F.iv); F.left = fTotal(); renderCalm(); break;
+    case "fstart": fToggle(); break;
+    case "freset": F.run = false; clearInterval(F.iv); F.left = fTotal(); fPaint(); break;
+    case "topic": S.topic = S.topic === v ? null : v; $("#topics").innerHTML = topicsHTML(); break;
+    case "faq": S.faq = S.faq === +v ? null : +v; $("#faq").innerHTML = faqHTML(); break;
+    case "copy": {
+      const txt = buildMsg();
+      const fallback = () => { const b = $("#msgout"); if (b) { const rg = document.createRange(); rg.selectNodeContents(b); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(rg); } toast("Message selected. Press and hold to copy."); };
+      try { navigator.clipboard.writeText(txt).then(() => toast("Message copied"), fallback); } catch (err) { fallback(); }
+      break; }
+  }
+});
+const RQ_FIELDS = { "rq-type": "type", "rq-to": "to", "rq-from": "from", "rq-until": "until", "rq-name": "name", "rq-cls": "cls", "rq-notes": "notes" };
+const PF_FIELDS = { "pf-name": "name", "pf-cls": "cls" };
+document.addEventListener("change", e => {
+  const t = e.target;
+  if (t.matches("[data-c]")) { S.concerns[t.dataset.c] = t.checked; return; }
+  if (t.matches("[data-rqs]")) { const r = D.requests.find(x => x.id === t.dataset.rqs); if (r) { r.status = t.value; save(); $("#rq-list").innerHTML = rqListHTML(); } return; }
+  if (t.id === "rq-cert") { S.rq.cert = t.checked; refreshRq(); return; }
+  if (t.id === "pf-share") { S.pf.share = t.checked; return; }
+  if (t.id === "sample-toggle") { S.demo = t.checked; try { localStorage.setItem("stuwell-demo", S.demo ? "1" : "0"); } catch (err) { /* ignore */ } toast(S.demo ? "Sample students on" : "Sample students off"); return; }
+  if (t.id === "dcls") { S.fcls = t.value; $("#slist").innerHTML = studentsListHTML(); return; }
+  if (t.id === "dlev") { S.flev = t.value; $("#slist").innerHTML = studentsListHTML(); return; }
+  if (RQ_FIELDS[t.id]) { S.rq[RQ_FIELDS[t.id]] = t.value; refreshRq(); return; }
+  if (t.matches("[data-w]")) {
+    S.wind[t.dataset.w] = t.checked;
+    const n = WIND.filter((_, i) => S.wind[i]).length, c = $("#wcount");
+    if (c) c.textContent = `${n} of ${WIND.length} done${n === WIND.length ? ". Sleep well." : ""}`;
+    return;
+  }
+  const map = { "m-to": "to", "m-about": "about", "m-how": "howlong", "m-want": "want" };
+  if (map[t.id]) { S.msg[map[t.id]] = t.value; const o = $("#msgout"); if (o) o.textContent = buildMsg(); }
+});
+document.addEventListener("input", e => {
+  const id = e.target.id;
+  if (id === "worry") S.worry = e.target.value;
+  else if (id === "demo-r") { const o = $("#demo-out"); if (o) o.innerHTML = demoOut(+e.target.value); }
+  else if (id === "dq") { S.fq = e.target.value; const l = $("#slist"); if (l) l.innerHTML = studentsListHTML(); }
+  else if (PF_FIELDS[id]) S.pf[PF_FIELDS[id]] = e.target.value;
+  else if (RQ_FIELDS[id]) { S.rq[RQ_FIELDS[id]] = e.target.value; refreshRq(); }
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape") return;
+  if (S.dlg) closeDlg();
+  else if (S.menu) { S.menu = false; S.confirmWipe = false; renderHeader(); const b = $("#menu-btn"); if (b) b.focus(); }
+});
+window.addEventListener("hashchange", () => {
+  if (location.hash.slice(1) === lastHash) return;
+  parseHash(); lastHash = hashFor(); render(); top0();
+});
+
+/* ---------- start ---------- */
+applyTheme();
+parseHash(); lastHash = location.hash.slice(1);
+render();
+initLive();
+</script>
+
+</body></html>
